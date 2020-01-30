@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">File Sender</string>
+    <string name="title_activity_send">Senden mit FileSender</string>
+    <string name="kick">Kicken</string>
+    <string name="files">Dateien</string>
+    <string name="devices">Geräte</string>
+    <string name="con_clients">Verbundene Geräte: %d</string>
+    <string name="action_settings">Einstellungen</string>
+    <string name="remove">Entfernen</string>
+    <string name="file_select">Wähle eine Datei</string>
+    <string name="sharing_file">Datei wird gesendet...</string>
+    <string name="fileshare_failed">Dateiübertragung fehlgeschlagen</string>
+</resources>
