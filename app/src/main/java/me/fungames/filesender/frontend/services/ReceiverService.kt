@@ -37,26 +37,28 @@ class ReceiverService : Service(), CoroutineScope by MainScope() {
     var timer = Timer("FileSenderScanner")
 
     override fun onBind(intent: Intent?): IBinder? {
-        currentlyBound++
+       /* currentlyBound++
         if (running) {
             timer.cancel()
             timer = Timer("FileSenderScanner")
             running = false
-        }
+        }*/
         return null
     }
 
     override fun onUnbind(intent: Intent?): Boolean {
-        currentlyBound--
-        if (currentlyBound == 0) {
+        /*currentlyBound--
+        if (currentlyBound <= 0) {
+            currentlyBound = 0
             timer.schedule(timerTask { run.invoke() }, 0L, 10000L)
             running = true
-        }
+        }*/
         return super.onUnbind(intent)
     }
 
     override fun onDestroy() {
         Toast.makeText(applicationContext, "Service destroyed", Toast.LENGTH_SHORT).show()
+        timer.cancel()
     }
 
     override fun onCreate() {
@@ -80,12 +82,12 @@ class ReceiverService : Service(), CoroutineScope by MainScope() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        val int = super.onStartCommand(intent, flags, startId)
+        super.onStartCommand(intent, flags, startId)
         Toast.makeText(applicationContext, "Service start", Toast.LENGTH_SHORT).show()
         if (!running && currentlyBound == 0) {
             timer.schedule(timerTask { run.invoke() }, 0L, 10000L)
             running = true
         }
-        return int
+        return START_STICKY
     }
 }

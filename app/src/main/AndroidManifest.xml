@@ -20,11 +20,13 @@
             android:name=".frontend.ui.receive.ReceiveActivity"
             android:label="@string/title_activity_receive"
             android:configChanges="keyboardHidden|orientation|screenSize"
+            android:launchMode="singleInstance"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".frontend.ui.send.SendActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_send"
+            android:launchMode="singleInstance"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
@@ -60,7 +62,7 @@
             </intent-filter>
         </service>
 
-        <service android:name=".frontend.services.ReceiverService" android:enabled="true" />
+        <service android:name=".frontend.services.ReceiverService" android:enabled="true" android:process=":ReceiverProcess" />
 
         <receiver android:name=".frontend.ApStateReceiver">
             <intent-filter>

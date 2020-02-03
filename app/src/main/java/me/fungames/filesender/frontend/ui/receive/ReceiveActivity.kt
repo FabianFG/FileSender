@@ -2,10 +2,12 @@ package me.fungames.filesender.frontend.ui.receive
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.*
+import android.content.ActivityNotFoundException
+import android.content.ComponentName
+import android.content.Intent
+import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.net.wifi.WifiManager
 import android.os.*
 import android.provider.Settings
 import android.text.format.Formatter
@@ -20,15 +22,11 @@ import kotlinx.android.synthetic.main.activity_receive.*
 import kotlinx.android.synthetic.main.content_receive.*
 import kotlinx.android.synthetic.main.fileshare_accept_dialog.*
 import kotlinx.android.synthetic.main.fileshare_receive_dialog.*
-import kotlinx.android.synthetic.main.fileshare_waiting_for_client_dialog.*
-import kotlinx.android.synthetic.main.fileshare_waiting_for_client_dialog.remainingTimeView
 import me.fungames.filesender.CLIENT_TIMEOUT
 import me.fungames.filesender.R
 import me.fungames.filesender.client.Client
 import me.fungames.filesender.config.doOpenFilesAfterReceiving
 import me.fungames.filesender.config.getServerPort
-import me.fungames.filesender.frontend.services.ReceiverService
-import me.fungames.filesender.frontend.services.SenderTileService
 import me.fungames.filesender.model.payloads.AuthAcceptedPacket
 import me.fungames.filesender.model.payloads.AuthDeniedPacket
 import me.fungames.filesender.model.payloads.FileShareRequestPacket
@@ -38,8 +36,6 @@ import me.fungames.filesender.utils.getServerIpAddr
 import me.fungames.filesender.utils.setDynamicHeight
 import java.io.IOException
 import java.net.ConnectException
-import java.net.InetAddress
-import java.net.UnknownHostException
 import kotlin.math.roundToInt
 
 
@@ -91,7 +87,7 @@ class ReceiveActivity : AppCompatActivity() {
         fileListAdapter = FileListAdapter(this, R.layout.simple_string_list_item, fileListContent)
         fileList.adapter = fileListAdapter
         requestStoragePermission()
-        bindService(Intent(this, ReceiverService::class.java), serviceConn, Context.BIND_AUTO_CREATE)
+        //bindService(Intent(this, ReceiverService::class.java), serviceConn, Context.BIND_AUTO_CREATE)
         if (intent != null && intent.getBooleanExtra("autoConnect", false)) {
             fab.performClick()
         }
@@ -99,7 +95,7 @@ class ReceiveActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        unbindService(serviceConn)
+        //unbindService(serviceConn)
         fileClient.close()
     }
 
