@@ -31,17 +31,62 @@
                 app:layout_collapseMode="pin"
                 app:popupTheme="@style/AppTheme.PopupOverlay" />
 
-            <TextView
-                android:id="@+id/connectedClients"
+            <LinearLayout
+                android:id="@+id/sendInfoLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:paddingStart="20dp"
+                android:paddingTop="10dp"
+                android:paddingEnd="20dp"
+                tools:visibility="gone">
+
+                <TextView
+                    android:id="@+id/hotspotName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/hotspot_name"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/white"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    tools:visibility="visible" />
+
+                <TextView
+                    android:id="@+id/hotspotPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/hotspot_password"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/white"
+                    android:textSize="18sp"
+                    tools:visibility="visible" />
+
+                <TextView
+                    android:id="@+id/connectedClients"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/con_clients"
+                    android:textColor="@android:color/white"
+                    android:textSize="18sp"
+                    tools:visibility="visible" />
+
+            </LinearLayout>
+
+            <ImageButton
+                android:id="@+id/qrCodeButton"
+                style="@style/Widget.AppCompat.ImageButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingLeft="20dp"
+                android:layout_gravity="end"
+                android:backgroundTint="#00FFFFFF"
+                android:contentDescription="@string/qr_code"
+                android:onClick="onQrCodeButtonClicked"
+                android:paddingStart="10dp"
                 android:paddingTop="10dp"
-                android:paddingRight="20dp"
-                android:text="@string/con_clients"
-                android:textColor="@android:color/white"
-                android:textSize="18sp"
-                tools:visibility="gone" />
+                android:paddingEnd="10dp"
+                app:srcCompat="@drawable/ic_qr_code"
+                tools:visibility="visible" />
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>

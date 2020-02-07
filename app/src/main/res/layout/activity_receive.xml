@@ -42,6 +42,21 @@
                 android:textSize="18sp"
                 tools:visibility="gone" />
 
+            <ImageButton
+                android:id="@+id/scanQrCodeButton"
+                style="@style/Widget.AppCompat.ImageButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:backgroundTint="#00FFFFFF"
+                android:contentDescription="@string/qr_code"
+                android:onClick="onScanQrCodeButtonClicked"
+                android:paddingStart="10dp"
+                android:paddingTop="10dp"
+                android:paddingEnd="10dp"
+                app:srcCompat="@drawable/ic_qr_code"
+                tools:visibility="visible" />
+
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
 

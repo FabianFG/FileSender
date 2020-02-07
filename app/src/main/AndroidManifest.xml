@@ -4,9 +4,13 @@
     package="me.fungames.filesender">
 
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+
 
     <application
         android:allowBackup="true"
@@ -21,6 +25,10 @@
             android:label="@string/title_activity_receive"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:launchMode="singleInstance"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".frontend.ui.receive.ScanQrActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".frontend.ui.send.SendActivity"
@@ -51,7 +59,7 @@
             </intent-filter>
         </activity>
 
-        <service
+        <!--<service
             android:name=".frontend.services.SenderTileService"
             android:icon="@android:drawable/ic_menu_share"
             android:label="@string/tile_title"
@@ -60,15 +68,15 @@
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE"/>
             </intent-filter>
-        </service>
+        </service>-->
 
-        <service android:name=".frontend.services.ReceiverService" android:enabled="true" android:process=":ReceiverProcess" />
+<!--        <service android:name=".frontend.services.ReceiverService" android:enabled="true" android:process=":ReceiverProcess" />-->
 
-        <receiver android:name=".frontend.ApStateReceiver">
+        <!--<receiver android:name=".frontend.ApStateReceiver">
             <intent-filter>
                 <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
             </intent-filter>
-        </receiver>
+        </receiver>-->
 
         <!--<receiver android:name=".frontend.services.BootReceiver" android:exported="true">
             <intent-filter>
@@ -76,6 +84,11 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </receiver>-->
+        <receiver android:name=".frontend.ui.receive.NetworkStateChanged" android:exported="true">
+            <intent-filter android:priority="100">
+                <action android:name="android.net.wifi.STATE_CHANGE" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

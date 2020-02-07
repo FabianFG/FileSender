@@ -38,4 +38,12 @@
     <string name="receiving_file">Receiving File...</string>
     <string name="file_open_failed">Failed to open file \'%s\'</string>
     <string name="tile_title">File Sender</string>
+    <string name="qr_code">QR Code</string>
+    <string name="starting">Starting</string>
+    <string name="failed_to_start_hotspot_title">Failed to start hotspot</string>
+    <string name="hotspot_already_enabled">Hotspot is already enabled</string>
+    <string name="disallowed_to_start_hotspot">Disallowed to start hotspot</string>
+    <string name="failed_to_start_hotspot">Failed to start hotspot: %s</string>
+    <string name="hotspot_name">Name: %s</string>
+    <string name="hotspot_password">Password: %s</string>
 </resources>

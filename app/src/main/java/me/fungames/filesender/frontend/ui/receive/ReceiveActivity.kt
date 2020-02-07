@@ -2,12 +2,13 @@ package me.fungames.filesender.frontend.ui.receive
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.ActivityNotFoundException
-import android.content.ComponentName
-import android.content.Intent
-import android.content.ServiceConnection
+import android.app.Activity
+import android.content.*
 import android.content.pm.PackageManager
-import android.net.Uri
+import android.net.*
+import android.net.wifi.WifiConfiguration
+import android.net.wifi.WifiManager
+import android.net.wifi.WifiNetworkSpecifier
 import android.os.*
 import android.provider.Settings
 import android.text.format.Formatter
@@ -22,6 +23,9 @@ import kotlinx.android.synthetic.main.activity_receive.*
 import kotlinx.android.synthetic.main.content_receive.*
 import kotlinx.android.synthetic.main.fileshare_accept_dialog.*
 import kotlinx.android.synthetic.main.fileshare_receive_dialog.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 import me.fungames.filesender.CLIENT_TIMEOUT
 import me.fungames.filesender.R
 import me.fungames.filesender.client.Client
@@ -39,11 +43,26 @@ import java.net.ConnectException
 import kotlin.math.roundToInt
 
 
-class ReceiveActivity : AppCompatActivity() {
+class NetworkStateChanged(val receiveActivity: ReceiveActivity) : BroadcastReceiver() {
+
+    override fun onReceive(context: Context, intent: Intent) {
+        val info = intent.getParcelableExtra<NetworkInfo>(WifiManager.EXTRA_NETWORK_INFO)
+        if (info != null && info.isConnected) {
+            val wifiManager = context.getSystemService(Context.WIFI_SERVICE) as WifiManager
+            val wifiInfo = wifiManager.connectionInfo
+            receiveActivity.onNetworkConnected(wifiInfo.ssid)
+        }
+    }
+
+}
+
+class ReceiveActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
 
     companion object {
-        const val permissionRequestCode = 69
+        const val storagePermissionRequestCode = 69
+        const val cameraPermissionRequestCode = 70
+        const val scanQrRequestCode = 6969
         const val TAG = "ReceiveActivity"
     }
 
@@ -59,11 +78,30 @@ class ReceiveActivity : AppCompatActivity() {
     val fileListContent = mutableListOf<FileInfoContainer>()
     lateinit var fileListAdapter : ArrayAdapter<FileInfoContainer>
 
+    private val expectedWifis = mutableListOf<String>()
+
+    private lateinit var networkStateChanged : NetworkStateChanged
+
     val serviceConn = object : ServiceConnection {
         override fun onServiceDisconnected(name: ComponentName?) {}
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {}
     }
 
+    fun onScanQrCodeButtonClicked(view: View) {
+        if (checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            startActivityForResult(Intent(this, ScanQrActivity::class.java), scanQrRequestCode)
+        } else {
+            requestCameraPermission()
+        }
+
+    }
+
+    fun onNetworkConnected(ssid : String) {
+        Log.d(TAG, "Connected to $ssid, expected networks: $expectedWifis")
+        if(expectedWifis.remove(ssid)) {
+            Handler().postDelayed({launch { startClient() }}, 5000)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -91,10 +129,13 @@ class ReceiveActivity : AppCompatActivity() {
         if (intent != null && intent.getBooleanExtra("autoConnect", false)) {
             fab.performClick()
         }
+        networkStateChanged = NetworkStateChanged(this)
+        registerReceiver(networkStateChanged, IntentFilter(WifiManager.NETWORK_STATE_CHANGED_ACTION))
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        unregisterReceiver(networkStateChanged)
         //unbindService(serviceConn)
         fileClient.close()
     }
@@ -138,6 +179,7 @@ class ReceiveActivity : AppCompatActivity() {
 
     fun onLoginFailed(packet: AuthDeniedPacket) = runOnUiThread {
         fab.isClickable = true
+        stopClient()
         AlertDialog.Builder(this)
             .setTitle(R.string.login_failed)
             .setMessage(packet.message)
@@ -267,9 +309,65 @@ class ReceiveActivity : AppCompatActivity() {
         acceptDialog.show()
     }
 
+    private fun requestCameraPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf(Manifest.permission.CAMERA), cameraPermissionRequestCode)
+        }
+    }
+
     private fun requestStoragePermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), permissionRequestCode)
+            requestPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), storagePermissionRequestCode)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when(requestCode) {
+            scanQrRequestCode -> {
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    val text = data.getStringExtra(ScanQrActivity.SCANNED_RESULT) ?: return
+                    if (text.contains(':')) {
+                        val hotspotName = text.substringBefore(':')
+                        val hotspotPassword = text.substringAfter(':')
+                        connectToWifi(hotspotName, hotspotPassword)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun connectToWifi(ssid : String, preSharedKey : String) {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val spec = WifiNetworkSpecifier.Builder()
+                .setSsid(ssid)
+                .setWpa2Passphrase(preSharedKey)
+                .build()
+            val request = NetworkRequest.Builder().setNetworkSpecifier(spec).build()
+            val conn = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            conn.requestNetwork(request, object: ConnectivityManager.NetworkCallback() {
+                override fun onAvailable(network: Network) {
+                    startClient()
+                }
+
+                override fun onLost(network: Network) {
+                    stopClient()
+                }
+            })
+        } else {
+            val config = WifiConfiguration()
+            config.SSID = "\"$ssid\""
+            config.preSharedKey = "\"$preSharedKey\""
+            val wifi = getSystemService(Context.WIFI_SERVICE) as WifiManager
+            if (!wifi.isWifiEnabled) {
+                wifi.isWifiEnabled = true
+            }
+            val netId = wifi.addNetwork(config)
+            wifi.disconnect()
+            wifi.enableNetwork(netId, true)
+            wifi.reconnect()
+            expectedWifis.add("\"$ssid\"")
         }
     }
 
@@ -278,12 +376,12 @@ class ReceiveActivity : AppCompatActivity() {
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
-        if (requestCode == permissionRequestCode && permissions.isNotEmpty() && permissions[0] == Manifest.permission.WRITE_EXTERNAL_STORAGE && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        if (requestCode == storagePermissionRequestCode && permissions.isNotEmpty() && permissions[0] == Manifest.permission.WRITE_EXTERNAL_STORAGE && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             Log.i(TAG, "Granted external storage permissions")
         } else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE) && requestCode == storagePermissionRequestCode) {
                 restartActivity()
-            } else {
+            } else if(requestCode == storagePermissionRequestCode) {
                 AlertDialog.Builder(this)
                     .setTitle(R.string.permission_denied)
                     .setMessage(R.string.permission_denied_body)
