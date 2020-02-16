@@ -46,4 +46,9 @@
     <string name="failed_to_start_hotspot">Failed to start hotspot: %s</string>
     <string name="hotspot_name">Name: %s</string>
     <string name="hotspot_password">Password: %s</string>
+    <string name="icon">Icon</string>
+    <string name="add_app">Add App</string>
+    <string name="add_file">Add File</string>
+    <string name="receive">Receive</string>
+    <string name="send">Send</string>
 </resources>

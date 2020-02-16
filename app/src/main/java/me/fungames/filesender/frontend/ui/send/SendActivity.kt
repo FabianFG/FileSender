@@ -2,12 +2,12 @@ package me.fungames.filesender.frontend.ui.send
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.Canvas
 import android.location.LocationManager
 import android.net.Uri
 import android.net.wifi.WifiManager
@@ -21,8 +21,10 @@ import android.view.View
 import android.widget.ImageView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.FileProvider
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.MultiFormatWriter
+import com.leinardi.android.speeddial.SpeedDialActionItem
 import kotlinx.android.synthetic.main.activity_send.*
 import kotlinx.android.synthetic.main.content_send.*
 import kotlinx.android.synthetic.main.fileshare_send_dialog.*
@@ -33,9 +35,10 @@ import me.fungames.filesender.R
 import me.fungames.filesender.config.getName
 import me.fungames.filesender.config.getServerPort
 import me.fungames.filesender.config.getVersion
-import me.fungames.filesender.frontend.ui.receive.ReceiveActivity
+import me.fungames.filesender.frontend.ui.appsend.AppSendActivity
 import me.fungames.filesender.server.*
 import me.fungames.filesender.utils.setDynamicHeight
+import java.io.File
 import java.net.BindException
 import kotlin.math.roundToInt
 
@@ -45,6 +48,7 @@ class SendActivity : AppCompatActivity(), CoroutineScope by MainScope() {
     companion object {
         const val fileOpenRequestCode = 69
         const val locationPermissionRequestCode = 71
+        const val appOpenRequestCode = 72
     }
 
     var white = -0x1
@@ -148,13 +152,6 @@ class SendActivity : AppCompatActivity(), CoroutineScope by MainScope() {
             }
         }
 
-        addFile.setOnClickListener {
-            val intent = Intent()
-                .setType("*/*")
-                .setAction(Intent.ACTION_GET_CONTENT)
-            startActivityForResult(Intent.createChooser(intent, getString(R.string.file_select)), fileOpenRequestCode)
-        }
-
         clientListAdapter = ClientListAdapter(this, R.layout.client_adapter_layout, clientListContent)
         clientList.adapter = clientListAdapter
         fileListAdapter = FileListAdapter(this, R.layout.file_adapter_layout, fileListContent)
@@ -163,6 +160,21 @@ class SendActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         when (intent?.action) {
             Intent.ACTION_SEND -> handleFileShare(intent)
             Intent.ACTION_SEND_MULTIPLE -> handleMultipleFileShare(intent)
+        }
+        intent?.let { handleApkShare(it) }
+        addFileDial.addActionItem(SpeedDialActionItem.Builder(R.id.fab_add_app, android.R.drawable.sym_def_app_icon).setLabel(R.string.add_app).create())
+        addFileDial.addActionItem(SpeedDialActionItem.Builder(R.id.fab_add_file, android.R.drawable.ic_menu_add).setLabel(R.string.add_file).create())
+        addFileDial.setOnActionSelectedListener {
+            when(it.id) {
+                R.id.fab_add_app -> startActivityForResult(Intent(this, AppSendActivity::class.java), appOpenRequestCode)
+                R.id.fab_add_file -> {
+                    val intent = Intent()
+                        .setType("*/*")
+                        .setAction(Intent.ACTION_GET_CONTENT)
+                    startActivityForResult(Intent.createChooser(intent, getString(R.string.file_select)), fileOpenRequestCode)
+                }
+            }
+            false
         }
     }
 
@@ -246,6 +258,8 @@ class SendActivity : AppCompatActivity(), CoroutineScope by MainScope() {
             if (fileUri != null) {
                 registerNewFile(fileUri)
             }
+        } else if (requestCode == appOpenRequestCode && resultCode == Activity.RESULT_OK && data != null) {
+            handleApkShare(data)
         }
     }
 
@@ -264,15 +278,28 @@ class SendActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         extra?.let { registerNewFile(it) }
     }
 
-    @Synchronized
-    private fun registerNewFile(uri : Uri) {
-        val descriptor = UriFileDescriptor(this, uri)
+    private fun handleApkShare(intent: Intent) {
+        val path = intent.getStringExtra(AppSendActivity.APK_PATH)
+        val name = intent.getStringExtra(AppSendActivity.APK_NAME)
+        if (path != null && name != null) {
+            val fileDesc = ApkFileDescriptor(File(path), name)
+            registerNewFile(fileDesc)
+        }
+    }
+
+    private fun registerNewFile(descriptor: FileDescriptor) {
         val fileId = fileServer.addFile(descriptor)
         fileListContent.add(FileInfoContainer(fileId, descriptor))
         runOnUiThread {
             fileListAdapter.notifyDataSetChanged()
             fileList.setDynamicHeight()
         }
+    }
+
+    @Synchronized
+    private fun registerNewFile(uri : Uri) {
+        val descriptor = UriFileDescriptor(this, uri)
+        registerNewFile(descriptor)
     }
 
     private fun handleMultipleFileShare(intent: Intent) {

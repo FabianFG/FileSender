@@ -18,6 +18,7 @@ import android.webkit.MimeTypeMap
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.FileProvider
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_receive.*
 import kotlinx.android.synthetic.main.content_receive.*
@@ -282,11 +283,12 @@ class ReceiveActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                     dialog.cancel()
                     if (doOpenFilesAfterReceiving()) {
                         runOnUiThread {
+                            val fileUri = FileProvider.getUriForFile(this, "me.fungames.provider", it.file)
                             val mimeMap = MimeTypeMap.getSingleton()
                             val intent = Intent(Intent.ACTION_VIEW)
-                            val mimeType = mimeMap.getMimeTypeFromExtension(it.file.extension) ?: "*/*"
-                            intent.setDataAndType(Uri.fromFile(it.file), mimeType)
-                            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                            var mimeType = mimeMap.getMimeTypeFromExtension(it.file.extension) ?: "*/*"
+                            intent.setDataAndType(fileUri, mimeType)
+                            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_GRANT_READ_URI_PERMISSION
                             try {
                                 startActivity(intent)
                             } catch (e : ActivityNotFoundException) {

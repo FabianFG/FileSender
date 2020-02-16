@@ -1,5 +1,7 @@
 package me.fungames.filesender.frontend.ui.send
 
-class FileInfoContainer(val id : Int, val descriptor: UriFileDescriptor) {
+import me.fungames.filesender.server.FileDescriptor
+
+class FileInfoContainer(val id : Int, val descriptor: FileDescriptor) {
     override fun toString() = descriptor.toString()
 }

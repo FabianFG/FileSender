@@ -98,18 +98,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/fab_margin"
+        android:visibility="visible"
         app:layout_anchor="@id/app_bar"
         app:layout_anchorGravity="bottom|end"
         app:srcCompat="@android:drawable/ic_media_play" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/addFile"
+    <com.leinardi.android.speeddial.SpeedDialView
+        android:id="@+id/addFileDial"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="end|bottom"
-        android:layout_margin="16dp"
-        android:clickable="true"
-        android:focusable="true"
-        app:srcCompat="@android:drawable/ic_menu_add" />
+        android:layout_gravity="bottom|end"
+        app:sdMainFabClosedSrc="@android:drawable/ic_menu_add" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
