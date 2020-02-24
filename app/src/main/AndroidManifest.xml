@@ -8,8 +8,10 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 
     <application
         android:allowBackup="true"
@@ -18,10 +20,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
+        android:fullBackupContent="true"
         tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".frontend.ui.history.FileHistoryActivity" android:label="@string/file_history" />
+        <activity android:name=".frontend.ui.help.HelpActivity" android:label="@string/help" />
 
         <provider
-            android:name="me.fungames.filesender.frontend.provider.GenericFileProvider"
+            android:name=".frontend.provider.GenericFileProvider"
             android:authorities="me.fungames.provider"
             android:exported="false"
             android:grantUriPermissions="true">
@@ -30,7 +35,7 @@
                 android:resource="@xml/provider_paths" />
         </provider>
 
-        <activity android:name=".frontend.ui.appsend.AppSendActivity"></activity>
+        <activity android:name=".frontend.ui.appsend.AppSendActivity" />
         <activity
             android:name=".frontend.ui.receive.ReceiveActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
@@ -39,7 +44,7 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".frontend.ui.receive.ScanQrActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".frontend.ui.send.SendActivity"
@@ -62,41 +67,14 @@
                 <data android:mimeType="*/*" />
             </intent-filter>
         </activity>
-        <activity android:name=".frontend.ui.main.MainActivity">
+        <activity android:name=".frontend.ui.main.MainActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <!--
-<service
-            android:name=".frontend.services.SenderTileService"
-            android:icon="@android:drawable/ic_menu_share"
-            android:label="@string/tile_title"
-            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
-
-            <intent-filter>
-                <action android:name="android.service.quicksettings.action.QS_TILE"/>
-            </intent-filter>
-        </service>
-        -->
-        <!-- <service android:name=".frontend.services.ReceiverService" android:enabled="true" android:process=":ReceiverProcess" /> -->
-        <!--
-<receiver android:name=".frontend.ApStateReceiver">
-            <intent-filter>
-                <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
-            </intent-filter>
-        </receiver>
-        -->
-        <!--
-<receiver android:name=".frontend.services.BootReceiver" android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </receiver>
-        -->
         <receiver
             android:name=".frontend.ui.receive.NetworkStateChanged"
             android:exported="true">

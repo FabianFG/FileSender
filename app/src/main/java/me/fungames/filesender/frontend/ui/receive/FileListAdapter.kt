@@ -9,7 +9,7 @@ import android.widget.ArrayAdapter
 import android.widget.TextView
 import me.fungames.filesender.R
 
-class FileListAdapter(val receiveActivity: ReceiveActivity, val resource: Int, objects: List<FileInfoContainer>) :
+class FileListAdapter(private val receiveActivity: ReceiveActivity, private val resource: Int, objects: List<FileInfoContainer>) :
     ArrayAdapter<FileInfoContainer>(receiveActivity, resource, objects) {
 
     class ViewHolder(val fileName : TextView)

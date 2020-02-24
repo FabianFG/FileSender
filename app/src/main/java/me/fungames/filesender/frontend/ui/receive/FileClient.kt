@@ -3,7 +3,6 @@ package me.fungames.filesender.frontend.ui.receive
 import android.util.Log
 import me.fungames.filesender.TAG
 import me.fungames.filesender.client.Client
-import me.fungames.filesender.config.getName
 import me.fungames.filesender.config.getVersion
 import me.fungames.filesender.model.payloads.AuthAcceptedPacket
 import me.fungames.filesender.model.payloads.AuthDeniedPacket
@@ -11,7 +10,7 @@ import me.fungames.filesender.model.payloads.FileShareRequestPacket
 import me.fungames.filesender.server.BasicFileDescriptor
 import java.net.ConnectException
 
-class FileClient(val receiveActivity: ReceiveActivity, url : String) : Client(getName(), getVersion(), url) {
+class FileClient(private val receiveActivity: ReceiveActivity, url : String, name : String) : Client(name, getVersion(), url) {
     override fun reviewFileRequest(packet: FileShareRequestPacket) {
         receiveActivity.onFileShareRequest(packet)
     }

@@ -9,10 +9,10 @@ import java.io.File
 import java.io.RandomAccessFile
 import java.nio.ByteBuffer
 
-class FileReceiveHandle(val socket : WebSocket, val fileHandleId : Int, val fileSize : Long, val fileName : String, val chunkCount : Long, val chunkSize : Long, val downloadDirectory : String, val onStarted : (FileReceiveHandle) -> Unit, val onProgressUpdate : (FileReceiveHandle) -> Unit, val onCompleted : (FileReceiveHandle) -> Unit) {
+class FileReceiveHandle(private val socket : WebSocket, val fileHandleId : Int, val fileSize : Long, val fileName : String, val chunkCount : Long, private val chunkSize : Long, downloadDirectory : String, val onStarted : (FileReceiveHandle) -> Unit, val onProgressUpdate : (FileReceiveHandle) -> Unit, val onCompleted : (FileReceiveHandle) -> Unit) {
 
     val file = File("$downloadDirectory/$fileName")
-    val raFile = RandomAccessFile(file, "rw")
+    private val raFile = RandomAccessFile(file, "rw")
 
     var numReceivedChunks = 0L
     var receivedBytes = 0L

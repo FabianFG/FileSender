@@ -43,12 +43,16 @@ object FileInformation {
                 val split = docId.split(":").toTypedArray()
                 val type = split[0]
                 var contentUri: Uri? = null
-                if ("image" == type) {
-                    contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-                } else if ("video" == type) {
-                    contentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
-                } else if ("audio" == type) {
-                    contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+                when (type) {
+                    "image" -> {
+                        contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+                    }
+                    "video" -> {
+                        contentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
+                    }
+                    "audio" -> {
+                        contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+                    }
                 }
                 val selection = "_id=?"
                 val selectionArgs = arrayOf(
@@ -62,19 +66,6 @@ object FileInformation {
             return uri.path
         }
         return "unknown"
-    }
-
-    fun getName(context: Context, uri: Uri): String? {
-        var fileName: String? = null
-        val cursor = context.contentResolver
-            .query(uri, null, null, null, null, null)
-        if (cursor != null && cursor.moveToFirst()) { // get file name
-            fileName = cursor.getString(
-                cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-            )
-            cursor.close()
-        }
-        return fileName
     }
 
     fun getSize(context: Context, uri: Uri): String? {

@@ -5,7 +5,6 @@ import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.jsonSerializer
 import com.github.salomonbrys.kotson.registerTypeAdapter
 import com.google.gson.GsonBuilder
-import com.google.gson.JsonObject
 import me.fungames.filesender.config.getChunkSize
 import me.fungames.filesender.config.getClientTimeout
 import me.fungames.filesender.config.getConnTimeout

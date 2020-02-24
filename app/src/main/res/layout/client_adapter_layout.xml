@@ -17,6 +17,7 @@
 
     <Button
         android:id="@+id/kickClient"
+        style="@style/Widget.AppCompat.Button.Borderless.Colored"
         android:layout_width="267dp"
         android:layout_height="wrap_content"
         android:layout_weight="66.6"

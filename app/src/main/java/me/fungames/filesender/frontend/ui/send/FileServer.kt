@@ -2,11 +2,13 @@ package me.fungames.filesender.frontend.ui.send
 
 import android.util.Log
 import me.fungames.filesender.TAG
-import me.fungames.filesender.server.*
+import me.fungames.filesender.server.ClientInfo
+import me.fungames.filesender.server.FileDescriptor
+import me.fungames.filesender.server.Server
 import org.java_websocket.WebSocket
 import java.net.BindException
 
-class FileServer(val sendActivity : SendActivity, name: String, version: String, port: Int) : Server(name, version, port) {
+class FileServer(private val sendActivity : SendActivity, name: String, version: String, port: Int) : Server(name, version, port) {
     override fun onClientConnected(clientInfo: ClientInfo) {
         sendActivity.updateClientList(authorizedClients.values)
     }

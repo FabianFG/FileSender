@@ -5,7 +5,6 @@ import android.app.Dialog
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.view.LayoutInflater
-import android.view.View
 import android.view.Window
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -14,9 +13,9 @@ import me.fungames.filesender.R
 import me.fungames.filesender.server.ClientInfo
 import kotlin.math.roundToInt
 
-class ClientSelectDialog(val sendActivity: SendActivity, val clientListContent : List<ClientInfo>, val onSelected: (ClientInfo?) -> Unit) : Dialog(sendActivity) {
+class ClientSelectDialog(private val sendActivity: SendActivity, private val clientListContent : List<ClientInfo>, val onSelected: (ClientInfo?) -> Unit) : Dialog(sendActivity) {
 
-    lateinit var clientListAdapter : ArrayAdapter<ClientInfo>
+    private lateinit var clientListAdapter : ArrayAdapter<ClientInfo>
 
     @SuppressLint("InflateParams")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,6 +29,7 @@ class ClientSelectDialog(val sendActivity: SendActivity, val clientListContent :
         setContentView(view)
         clientListAdapter = ArrayAdapter(sendActivity, R.layout.simple_string_list_item, clientListContent)
         selectClientList.adapter = clientListAdapter
+        selectClientList.emptyView = noClientYetView
         clientListAdapter.notifyDataSetChanged()
         selectClientList.onItemClickListener =
             AdapterView.OnItemClickListener { _, _, position, _ ->

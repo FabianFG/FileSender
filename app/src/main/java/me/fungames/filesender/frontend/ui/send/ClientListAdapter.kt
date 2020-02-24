@@ -1,6 +1,5 @@
 package me.fungames.filesender.frontend.ui.send
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,7 +9,7 @@ import android.widget.TextView
 import me.fungames.filesender.R
 import me.fungames.filesender.server.ClientInfo
 
-class ClientListAdapter(val sendActivity: SendActivity, val resource: Int, objects: List<ClientInfo>) :
+class ClientListAdapter(private val sendActivity: SendActivity, private val resource: Int, objects: List<ClientInfo>) :
     ArrayAdapter<ClientInfo>(sendActivity, resource, objects) {
 
     class ViewHolder(val clientName : TextView, val kickClient : Button)

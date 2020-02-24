@@ -25,12 +25,12 @@ abstract class Server(val name : String, val version : String, port : Int) : Web
     private val serverInfo = ServerInfo(name)
 
     //Client Handling
-    val unauthorizedClients = WeakHashMap<WebSocket, Any?>()
-    val authorizedClientsBySocket = mutableMapOf<WebSocket, ClientInfo>()
+    private val unauthorizedClients = WeakHashMap<WebSocket, Any?>()
+    private val authorizedClientsBySocket = mutableMapOf<WebSocket, ClientInfo>()
     val authorizedClients = mutableMapOf<Int, ClientInfo>()
 
     //Control of file share
-    val activeFileShares = mutableMapOf<Int, FileHandle>()
+    private val activeFileShares = mutableMapOf<Int, FileHandle>()
 
     private var nextFileHandleId = 1
 
@@ -178,7 +178,7 @@ abstract class Server(val name : String, val version : String, port : Int) : Web
         if (client != null) {
             val handle = activeFileShares[packet.fileHandleId]
             if (handle != null && handle.client.clientId == client.clientId && handle.state == FileHandleState.WAITING_FOR_CLIENT) {
-                handle.clientDenied()
+                handle.clientDenied(packet.reason)
             }
         }
     }

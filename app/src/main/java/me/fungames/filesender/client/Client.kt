@@ -1,28 +1,27 @@
 package me.fungames.filesender.client
 
 import com.google.gson.JsonParseException
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import me.fungames.filesender.model.payloads.*
 import me.fungames.filesender.gson
 import me.fungames.filesender.info
 import me.fungames.filesender.model.Packet
+import me.fungames.filesender.model.payloads.*
 import me.fungames.filesender.sendPacket
 import me.fungames.filesender.server.BasicFileDescriptor
+import me.fungames.filesender.server.FailReason
 import org.java_websocket.client.WebSocketClient
 import org.java_websocket.handshake.ServerHandshake
 import java.net.URI
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
-abstract class Client(val name : String, val clientVersion : String, url : String) : WebSocketClient(URI.create(url)) {
+abstract class Client(val name : String, private val clientVersion : String, url : String) : WebSocketClient(URI.create(url)) {
 
     abstract fun reviewFileRequest(packet: FileShareRequestPacket)
     abstract fun onLogin(packet: AuthAcceptedPacket)
     abstract fun onLoginFailed(packet: AuthDeniedPacket)
     abstract fun onFileListUpdate(files: Map<Int, BasicFileDescriptor>)
 
-    val activeFileHandles = mutableMapOf<Int, FileReceiveHandle>()
+    private val activeFileHandles = mutableMapOf<Int, FileReceiveHandle>()
 
     var files = mapOf<Int, BasicFileDescriptor>()
         private set
@@ -86,13 +85,13 @@ abstract class Client(val name : String, val clientVersion : String, url : Strin
         reviewFileRequest(packet)
     }
 
-    fun fileShareRequestHandled(packet: FileShareRequestPacket, accept : Boolean, info: FileHandleInfo?) {
+    fun fileShareRequestHandled(packet: FileShareRequestPacket, accept : Boolean, info: FileHandleInfo?, reason : FailReason = FailReason.CLIENT_DENIED) {
         if (accept && info != null) {
             val handle = FileReceiveHandle(this, packet.fileHandleId, packet.fileSize, packet.fileName, packet.chunkCount, packet.chunkSize, info.dir, info.onStart, info.onProgressUpdate, info.onCompleted)
             activeFileHandles[handle.fileHandleId] = handle
             sendPacket(FileShareAcceptPacket(packet.fileHandleId))
         } else {
-            sendPacket(FileShareDeniedPacket(packet.fileHandleId))
+            sendPacket(FileShareDeniedPacket(packet.fileHandleId, reason))
         }
     }
 

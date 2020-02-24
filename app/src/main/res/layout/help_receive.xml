@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/help_connecting"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="10dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="10dp"
+        android:text="@string/help_connecting"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/help_connecting_qr"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="15dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="15dp"
+        android:text="@string/help_connecting_qr"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/help_connecting_qr_1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="20dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="20dp"
+        android:text="@string/help_connecting_qr_1" />
+
+    <TextView
+        android:id="@+id/help_connecting_qr_2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="20dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="20dp"
+        android:text="@string/help_connecting_qr_2" />
+
+    <TextView
+        android:id="@+id/help_connecting_qr_3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="20dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="20dp"
+        android:text="@string/help_connecting_qr_3" />
+
+    <TextView
+        android:id="@+id/help_connecting_qr_4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="20dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="20dp"
+        android:text="@string/help_connecting_qr_4" />
+
+    <TextView
+        android:id="@+id/help_connecting_manual_connection"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="15dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="15dp"
+        android:text="@string/help_connecting_manual_connection"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/help_connecting_manual_connection_1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="20dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="20dp"
+        android:text="@string/help_connecting_manual_connection_1" />
+
+    <TextView
+        android:id="@+id/help_connecting_manual_connection_2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="20dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="20dp"
+        android:text="@string/help_connecting_manual_connection_2" />
+
+    <TextView
+        android:id="@+id/help_connecting_already_connected2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="15dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="15dp"
+        android:text="@string/help_connecting_already_connected"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/help_connecting_already_connected_1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="20dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="20dp"
+        android:text="@string/help_connecting_already_connected_1" />
+
+    <TextView
+        android:id="@+id/help_receiving"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="10dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="10dp"
+        android:text="@string/help_receiving"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/help_receiving_downloading"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="15dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="15dp"
+        android:text="@string/help_receiving_downloading"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/help_receiving_downloading_1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="20dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="20dp"
+        android:text="@string/help_receiving_downloading_1" />
+
+    <TextView
+        android:id="@+id/help_receiving_downloading_2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="20dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="20dp"
+        android:text="@string/help_receiving_downloading_2" />
+
+    <TextView
+        android:id="@+id/help_receiving_downloading_3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="20dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="20dp"
+        android:text="@string/help_receiving_downloading_3"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/help_receiving_history"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="15dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="15dp"
+        android:text="@string/help_history"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/help_receiving_history_1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="20dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="20dp"
+        android:text="@string/help_history_1" />
+
+    <TextView
+        android:id="@+id/help_receiving_history_2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="20dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="20dp"
+        android:text="@string/help_history_2" />
+
+    <TextView
+        android:id="@+id/help_receiving_history_3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="20dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="20dp"
+        android:text="@string/help_history_3" />
+</LinearLayout>

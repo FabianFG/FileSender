@@ -40,7 +40,7 @@
                 android:text="@string/serv_name"
                 android:textColor="@android:color/white"
                 android:textSize="18sp"
-                tools:visibility="gone" />
+                tools:visibility="visible" />
 
             <ImageButton
                 android:id="@+id/scanQrCodeButton"

@@ -1,3 +1,4 @@
+@file:Suppress("DEPRECATION")
 package me.fungames.filesender.frontend.ui.send
 
 import android.Manifest
@@ -6,6 +7,7 @@ import android.app.Activity
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.location.LocationManager
@@ -19,9 +21,9 @@ import android.provider.Settings
 import android.text.format.Formatter
 import android.view.View
 import android.widget.ImageView
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.FileProvider
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.MultiFormatWriter
 import com.leinardi.android.speeddial.SpeedDialActionItem
@@ -32,12 +34,12 @@ import kotlinx.android.synthetic.main.fileshare_waiting_for_client_dialog.*
 import kotlinx.coroutines.*
 import me.fungames.filesender.CLIENT_TIMEOUT
 import me.fungames.filesender.R
-import me.fungames.filesender.config.getName
 import me.fungames.filesender.config.getServerPort
 import me.fungames.filesender.config.getVersion
+import me.fungames.filesender.frontend.receivers.ApStateReceiver
 import me.fungames.filesender.frontend.ui.appsend.AppSendActivity
 import me.fungames.filesender.server.*
-import me.fungames.filesender.utils.setDynamicHeight
+import me.fungames.filesender.utils.*
 import java.io.File
 import java.net.BindException
 import kotlin.math.roundToInt
@@ -53,30 +55,33 @@ class SendActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
     var white = -0x1
     var black = -0x1000000
-    val WIDTH = 500
+    private val width = 500
 
-    var topTitle
+    private var topTitle
         get() = toolbar_layout.title
         set(value) {toolbar_layout.title = value}
 
-    var fileServer = FileServer(this, getName(), getVersion(), getServerPort())
+    lateinit var fileServer : FileServer
         private set
 
-    val clientListContent = mutableListOf<ClientInfo>()
-    lateinit var clientListAdapter : ClientListAdapter
+    private val clientListContent = mutableListOf<ClientInfo>()
+    private lateinit var clientListAdapter : ClientListAdapter
 
-    val fileListContent = mutableListOf<FileInfoContainer>()
-    lateinit var fileListAdapter : FileListAdapter
+    private val fileListContent = mutableListOf<FileInfoContainer>()
+    private lateinit var fileListAdapter : FileListAdapter
 
-    var isRunning = false
-        private set
+    private var isRunning = false
 
-    lateinit var reservation: WifiManager.LocalOnlyHotspotReservation
-    lateinit var qrCode: Bitmap
+    private var hotspotInfoHolder : HotspotInfoHolder? = null
+
+    private lateinit var apStateReceiver : ApStateReceiver
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_send)
+        apStateReceiver = ApStateReceiver(this)
+        registerReceiver(apStateReceiver, IntentFilter("android.net.wifi.WIFI_AP_STATE_CHANGED"))
+        fileServer = FileServer(this, Settings.Secure.getString(contentResolver, "bluetooth_name"), getVersion(), getServerPort())
         setSupportActionBar(toolbar)
         topTitle = getString(R.string.inactive)
         sendInfoLayout.visibility = View.GONE
@@ -87,7 +92,7 @@ class SendActivity : AppCompatActivity(), CoroutineScope by MainScope() {
             if (isRunning) {
                 stopServer()
             } else {
-                if (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                if (checkSelfPermissionCompat(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                     val locManager = applicationContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
                     if (!locManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
                         startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
@@ -96,56 +101,11 @@ class SendActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                     toolbar_layout.setBackgroundColor(resources.getColor(android.R.color.holo_orange_dark))
                     topTitle = getString(R.string.starting)
                     val manager = applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
-                    manager.startLocalOnlyHotspot(
-                        object : WifiManager.LocalOnlyHotspotCallback() {
-                            override fun onFailed(reason: Int) {
-                                val builder = AlertDialog.Builder(this@SendActivity)
-                                    .setTitle(R.string.failed_to_start_hotspot_title)
-                                builder.setMessage(
-                                    when (reason) {
-                                        ERROR_GENERIC -> getString(
-                                            R.string.failed_to_start_hotspot,
-                                            "ERROR_GENERIC"
-                                        )
-                                        ERROR_INCOMPATIBLE_MODE -> getString(R.string.hotspot_already_enabled)
-                                        ERROR_TETHERING_DISALLOWED -> getString(R.string.disallowed_to_start_hotspot)
-                                        ERROR_NO_CHANNEL -> getString(
-                                            R.string.failed_to_start_hotspot,
-                                            "ERROR_NO_CHANNEL"
-                                        )
-                                        else -> getString(R.string.failed_to_start_hotspot_title)
-                                    }
-                                )
-                                builder.show()
-                                launch { stopServer() }
-                            }
-
-                            override fun onStarted(reservation: WifiManager.LocalOnlyHotspotReservation) {
-                                val result = MultiFormatWriter().encode(
-                                    reservation.wifiConfiguration.SSID + ":" + reservation.wifiConfiguration.preSharedKey,
-                                    BarcodeFormat.QR_CODE,
-                                    WIDTH,
-                                    WIDTH
-                                )
-                                val w: Int = result.width
-                                val h: Int = result.height
-                                val pixels = IntArray(w * h)
-                                for (y in 0 until h) {
-                                    val offset = y * w
-                                    for (x in 0 until w) {
-                                        pixels[offset + x] = if (result.get(x, y)) black else white
-                                    }
-                                }
-                                val bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
-                                bitmap.setPixels(pixels, 0, WIDTH, 0, 0, w, h)
-                                launch { startServer(reservation, bitmap) }
-                            }
-
-                            override fun onStopped() {
-                                launch { stopServer() }
-                            }
-                        }, null
-                    )
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        startUsingLocalOnlyHotspot(manager)
+                    } else {
+                        startUsingNormalHotspot(manager)
+                    }
                 } else {
                     requestLocationPermission()
                 }
@@ -178,6 +138,78 @@ class SendActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun startUsingLocalOnlyHotspot(manager: WifiManager) {
+        manager.startLocalOnlyHotspot(
+            object : WifiManager.LocalOnlyHotspotCallback() {
+                override fun onFailed(reason: Int) {
+                    val builder = AlertDialog.Builder(this@SendActivity)
+                        .setTitle(R.string.failed_to_start_hotspot_title)
+                    builder.setMessage(
+                        when (reason) {
+                            ERROR_GENERIC -> getString(
+                                R.string.failed_to_start_hotspot,
+                                "ERROR_GENERIC"
+                            )
+                            ERROR_INCOMPATIBLE_MODE -> getString(R.string.hotspot_already_enabled)
+                            ERROR_TETHERING_DISALLOWED -> getString(R.string.disallowed_to_start_hotspot)
+                            ERROR_NO_CHANNEL -> getString(
+                                R.string.failed_to_start_hotspot,
+                                "ERROR_NO_CHANNEL"
+                            )
+                            else -> getString(R.string.failed_to_start_hotspot_title)
+                        }
+                    )
+                    builder.show()
+                    launch { stopServer() }
+                }
+
+                override fun onStarted(reservation: WifiManager.LocalOnlyHotspotReservation) {
+                    val result = MultiFormatWriter().encode(
+                        reservation.wifiConfiguration.SSID + ":" + reservation.wifiConfiguration.preSharedKey,
+                        BarcodeFormat.QR_CODE,
+                        width,
+                        width
+                    )
+                    val w: Int = result.width
+                    val h: Int = result.height
+                    val pixels = IntArray(w * h)
+                    for (y in 0 until h) {
+                        val offset = y * w
+                        for (x in 0 until w) {
+                            pixels[offset + x] = if (result.get(x, y)) black else white
+                        }
+                    }
+                    val bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+                    bitmap.setPixels(pixels, 0, width, 0, 0, w, h)
+                    launch { startServer(reservation, bitmap) }
+                }
+
+                override fun onStopped() {
+                    launch { stopServer() }
+                }
+            }, null
+        )
+    }
+
+    private fun startUsingNormalHotspot(manager: WifiManager) {
+        launch(Dispatchers.IO) {
+            if (manager.isWifiApEnabled())
+                runOnUiThread { startServer() }
+            else {
+                if (manager.setWifiApEnabled(true)) {
+                    runOnUiThread { startServer() }
+                } else {
+                    runOnUiThread {
+                        AlertDialog.Builder(this@SendActivity).setTitle(R.string.warning).setMessage(R.string.failed_to_start_hotspot_try_manually).show()
+                        stopServer()
+                    }
+                }
+            }
+
+        }
+    }
+
     private fun requestLocationPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION), locationPermissionRequestCode)
@@ -186,27 +218,64 @@ class SendActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
     fun stopServer() {
         //Stop the server
-        reservation.close()
+        val infoHolder = hotspotInfoHolder
+        infoHolder?.close()
+        launch(Dispatchers.IO) {
+            val manager = applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+            if (manager.isWifiApEnabled() && !manager.setWifiApEnabled(false) && infoHolder !is Android8HotspotInfoHolder) {
+                runOnUiThread {
+                    AlertDialog.Builder(this@SendActivity).setTitle(R.string.warning).setMessage(R.string.failed_to_stop_hotspot_try_manually).show()
+                }
+            }
+        }
+        hotspotInfoHolder = null
         clientListContent.clear()
         clientListAdapter.notifyDataSetChanged()
         fileServer.stop()
-        fileServer = FileServer(this, getName(), getVersion(), getServerPort())
+        fileServer = FileServer(this, Settings.Secure.getString(contentResolver, "bluetooth_name"), getVersion(), getServerPort())
+        fileListContent.forEach {
+            val id = fileServer.addFile(it.descriptor)
+            it.id = id
+        }
         isRunning = false
         fab.setImageResource(android.R.drawable.ic_media_play)
         //Icon would disappear if not be redrawn
         fab.hide()
         fab.show()
         toolbar_layout.setBackgroundColor(resources.getColor(R.color.colorPrimary))
+        hotspotName.visibility = View.VISIBLE
+        hotspotPassword.visibility = View.VISIBLE
         sendInfoLayout.visibility = View.GONE
         qrCodeButton.visibility = View.GONE
         topTitle = getString(R.string.inactive)
     }
 
-    fun startServer(reservation: WifiManager.LocalOnlyHotspotReservation, qrCode : Bitmap) {
-        this.reservation = reservation
-        this.qrCode = qrCode
+    private fun startServer() {
         //Start the server
-        fileListContent.forEach { fileServer.addFile(it.descriptor) }
+        hotspotInfoHolder = FakeHotspotInfoHolder()
+        fileServer.start()
+        isRunning = true
+        fab.setImageResource(android.R.drawable.ic_media_pause)
+        //Icon would disappear if not be redrawn
+        fab.hide()
+        fab.show()
+        toolbar_layout.setBackgroundColor(resources.getColor(android.R.color.holo_green_light))
+        sendInfoLayout.visibility = View.VISIBLE
+        connectedClients.text = getString(R.string.con_clients, 0)
+        hotspotName.visibility = View.GONE
+        hotspotPassword.visibility = View.GONE
+        qrCodeButton.visibility = View.GONE
+        topTitle = getString(R.string.running)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun startServer(reservation: WifiManager.LocalOnlyHotspotReservation, qrCode : Bitmap) {
+        val dialog = Dialog(this@SendActivity)
+        dialog.setContentView(R.layout.qr_dialog)
+        val img = dialog.findViewById<ImageView>(R.id.qrCodeView)
+        img.setImageBitmap(qrCode)
+        this.hotspotInfoHolder = Android8HotspotInfoHolder(reservation, dialog)
+        //Start the server
         fileServer.start()
         isRunning = true
         fab.setImageResource(android.R.drawable.ic_media_pause)
@@ -223,15 +292,15 @@ class SendActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         showQrCodeDialog()
     }
 
-    fun showQrCodeDialog() {
-        val dialog = Dialog(this@SendActivity)
-        dialog.setContentView(R.layout.qr_dialog)
-        val img = dialog.findViewById<ImageView>(R.id.qrCodeView)
-        img.setImageBitmap(qrCode)
-        dialog.show()
+    private fun showQrCodeDialog() {
+        val info = hotspotInfoHolder
+        if (info != null && info is Android8HotspotInfoHolder) {
+            info.qrCodeDialog.show()
+        }
     }
 
     fun onQrCodeButtonClicked(view: View) {
+        unused(view)
         showQrCodeDialog()
     }
 
@@ -248,7 +317,8 @@ class SendActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
     override fun onDestroy() {
         super.onDestroy()
-        fileServer.stop()
+        unregisterReceiver(apStateReceiver)
+        stopServer()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -260,6 +330,16 @@ class SendActivity : AppCompatActivity(), CoroutineScope by MainScope() {
             }
         } else if (requestCode == appOpenRequestCode && resultCode == Activity.RESULT_OK && data != null) {
             handleApkShare(data)
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        if (requestCode == locationPermissionRequestCode && permissions.isNotEmpty() && permissions[0] == Manifest.permission.ACCESS_COARSE_LOCATION && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            fab.performClick()
         }
     }
 
@@ -314,7 +394,7 @@ class SendActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         }.show()
     }
 
-    fun sendFile(file: FileInfoContainer, client: ClientInfo) {
+    private fun sendFile(file: FileInfoContainer, client: ClientInfo) {
         launch(Dispatchers.IO) {
             val (onError, onStart, onProgressUpdate, onComplete) = prepareSendFile(file.descriptor, client)
             fileServer.sendFile(client.clientId, file.id, onError, onStart, onProgressUpdate, onComplete)
@@ -341,7 +421,7 @@ class SendActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                         waitDialog.cancel()
                     }
                 }.start()
-                val dialog = FileshareSendDialog(this@SendActivity)
+                val dialog = FileShareSendDialog(this@SendActivity)
                 dialog.setCancelable(false)
                 var maxSet = false
                 val onError : (FailReason) -> Unit = {

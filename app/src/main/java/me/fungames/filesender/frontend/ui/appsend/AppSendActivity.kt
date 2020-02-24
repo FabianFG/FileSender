@@ -1,9 +1,8 @@
 package me.fungames.filesender.frontend.ui.appsend
 
 import android.content.pm.ApplicationInfo
-import android.content.pm.PackageManager
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_app_send.*
 import me.fungames.filesender.R
 
@@ -14,8 +13,8 @@ class AppSendActivity : AppCompatActivity() {
         const val APK_NAME = "me.fungames.filesender.frontend.ui.appsend.AppSendActivity.APK_RESULT_NAME"
     }
 
-    val apps = mutableListOf<ApplicationInfo>()
-    lateinit var adapter : AppListAdapter
+    private val apps = mutableListOf<ApplicationInfo>()
+    private lateinit var adapter : AppListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

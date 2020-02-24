@@ -9,7 +9,7 @@ import android.view.Window
 import me.fungames.filesender.R
 import kotlin.math.roundToInt
 
-class WaitingForClientDialog(val sendActivity: SendActivity) : Dialog(sendActivity) {
+class WaitingForClientDialog(private val sendActivity: SendActivity) : Dialog(sendActivity) {
 
     @SuppressLint("InflateParams")
     override fun onCreate(savedInstanceState: Bundle?) {

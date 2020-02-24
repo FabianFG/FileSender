@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:layout_marginTop="-230dp">
+
+    <TextView
+        android:id="@+id/help_starting"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="10dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="10dp"
+        android:text="@string/help_starting"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/help_starting_80"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="15dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="15dp"
+        android:text="@string/help_starting_80"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/help_starting_80_1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="20dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="20dp"
+        android:text="@string/help_starting_80_1" />
+
+    <TextView
+        android:id="@+id/help_starting_80_2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="20dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="20dp"
+        android:text="@string/help_starting_80_2" />
+
+    <TextView
+        android:id="@+id/help_starting_80_3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="20dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="20dp"
+        android:text="@string/help_starting_80_3" />
+
+    <TextView
+        android:id="@+id/help_starting_80_4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="20dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="20dp"
+        android:text="@string/help_starting_80_4" />
+
+    <TextView
+        android:id="@+id/help_starting_80_5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="20dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="20dp"
+        android:text="@string/help_starting_80_5"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/help_starting_80_6"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="20dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="20dp"
+        android:text="@string/help_starting_80_6"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/help_starting_manual"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="15dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="15dp"
+        android:text="@string/help_starting_manual"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/help_connecting_starting_manual_1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="20dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="20dp"
+        android:text="@string/help_starting_80_1" />
+
+    <TextView
+        android:id="@+id/help_connecting_starting_manual_2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="20dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="20dp"
+        android:text="@string/help_starting_manual_2" />
+
+    <TextView
+        android:id="@+id/help_connecting_starting_manual_3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="20dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="20dp"
+        android:text="@string/help_starting_manual_3" />
+
+    <TextView
+        android:id="@+id/help_connecting_starting_manual_4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="20dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="20dp"
+        android:text="@string/help_starting_manual_4"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/help_adding"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="10dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="10dp"
+        android:text="@string/help_adding"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/help_adding_1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="20dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="20dp"
+        android:text="@string/help_adding_1" />
+
+    <TextView
+        android:id="@+id/help_adding_files"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="15dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="15dp"
+        android:text="@string/help_adding_files"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/help_adding_files_1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="20dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="20dp"
+        android:text="@string/help_adding_files_1" />
+
+    <TextView
+        android:id="@+id/help_adding_files_2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="20dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="20dp"
+        android:text="@string/help_adding_files_2" />
+
+    <TextView
+        android:id="@+id/help_adding_files_3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="20dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="20dp"
+        android:text="@string/help_adding_files_3" />
+
+    <TextView
+        android:id="@+id/help_adding_app"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="15dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="15dp"
+        android:text="@string/help_adding_app"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/help_adding_app_1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="20dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="20dp"
+        android:text="@string/help_adding_app_1" />
+
+    <TextView
+        android:id="@+id/help_adding_app_2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="20dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="20dp"
+        android:text="@string/help_adding_app_2" />
+
+    <TextView
+        android:id="@+id/help_adding_app_3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="20dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="20dp"
+        android:text="@string/help_adding_app_3" />
+
+    <TextView
+        android:id="@+id/help_sending"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="10dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="10dp"
+        android:text="@string/help_sending"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/help_sending_1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="20dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="20dp"
+        android:text="@string/help_sending_1" />
+
+    <TextView
+        android:id="@+id/help_sending_2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="20dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="20dp"
+        android:text="@string/help_receiving_downloading_3"
+        android:textStyle="bold" />
+</LinearLayout>

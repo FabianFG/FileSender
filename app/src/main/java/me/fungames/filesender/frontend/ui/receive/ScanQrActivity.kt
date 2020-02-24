@@ -12,7 +12,7 @@ class ScanQrActivity : Activity(), ZXingScannerView.ResultHandler {
         const val SCANNED_RESULT = "me.fungames.filesender.frontend.ui.receive.ScanQrActivity.SCANNED_RESULT"
     }
 
-    lateinit var scannerView : ZXingScannerView
+    private lateinit var scannerView : ZXingScannerView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

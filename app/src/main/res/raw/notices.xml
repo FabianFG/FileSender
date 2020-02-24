@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<notices>
+    <notice>
+        <name>Java-WebSocket</name>
+        <url>https://github.com/TooTallNate/Java-WebSocket</url>
+        <copyright>Copyright (c) 2010-2020 Nathan Rajlich</copyright>
+        <license>MIT License</license>
+    </notice>
+    <notice>
+        <name>Kotson</name>
+        <url>https://github.com/SalomonBrys/Kotson</url>
+        <copyright>Copyright (c) 2015 Salomon BRYS</copyright>
+        <license>MIT License</license>
+    </notice>
+    <notice>
+        <name>Gson</name>
+        <url>https://github.com/google/gson</url>
+        <copyright>Copyright 2008 Google Inc.</copyright>
+        <license>Apache Software License 2.0</license>
+    </notice>
+    <notice>
+        <name>kotlinx.coroutines</name>
+        <url>https://github.com/Kotlin/kotlinx.coroutines</url>
+        <copyright>Copyright 2016-2019 JetBrains s.r.o.</copyright>
+        <license>Apache Software License 2.0</license>
+    </notice>
+    <notice>
+        <name>zxing</name>
+        <url>https://github.com/zxing/zxing</url>
+        <copyright>Copyright Google Inc.</copyright>
+        <license>Apache Software License 2.0</license>
+    </notice>
+    <notice>
+        <name>barcodescanner</name>
+        <url>https://github.com/dm77/barcodescanner</url>
+        <copyright>Copyright (c) 2014 Dushyanth Maguluru</copyright>
+        <license>Apache Software License 2.0</license>
+    </notice>
+    <notice>
+        <name>FloatingActionButtonSpeedDial</name>
+        <url>https://github.com/leinardi/FloatingActionButtonSpeedDial</url>
+        <copyright>Copyright 2018 Roberto Leinardi</copyright>
+        <license>Apache Software License 2.0</license>
+    </notice>
+</notices>

@@ -9,7 +9,7 @@ import android.view.Window
 import me.fungames.filesender.R
 import kotlin.math.roundToInt
 
-class FileshareSendDialog(val sendActivity: SendActivity) : Dialog(sendActivity) {
+class FileShareSendDialog(private val sendActivity: SendActivity) : Dialog(sendActivity) {
 
     @SuppressLint("InflateParams")
     override fun onCreate(savedInstanceState: Bundle?) {

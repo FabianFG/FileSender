@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.ApplicationInfo
-import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,10 +11,8 @@ import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.TextView
 import me.fungames.filesender.R
-import me.fungames.filesender.frontend.ui.send.SendActivity
-import java.io.File
 
-class AppListAdapter(val appSendActivity: AppSendActivity, val resource: Int, objects: List<ApplicationInfo>) :
+class AppListAdapter(private val appSendActivity: AppSendActivity, private val resource: Int, objects: List<ApplicationInfo>) :
     ArrayAdapter<ApplicationInfo>(appSendActivity, resource, objects) {
 
     private val packageManager = appSendActivity.packageManager

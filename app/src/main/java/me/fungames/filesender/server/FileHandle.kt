@@ -6,8 +6,6 @@ import java.io.InputStream
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.util.*
-import java.util.concurrent.BlockingDeque
-import java.util.concurrent.BlockingQueue
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
 import kotlin.concurrent.timerTask
@@ -24,6 +22,7 @@ enum class FileHandleState {
 enum class FailReason {
     CLIENT_DISCONNECTED,
     CLIENT_DENIED,
+    CLIENT_NOT_ENOUGH_STORAGE,
     TIMEOUT,
     FAILED_TO_OPEN_INPUT_STREAM
 }
@@ -38,10 +37,8 @@ class FileHandle(val fileHandleId : Int, val client : ClientInfo, val file : Fil
     var sendChunks = 0
         private set
 
-    var confirmedBytes = 0L
-        private set
-    var confirmedChunks = 0
-        private set
+    private var confirmedBytes = 0L
+    private var confirmedChunks = 0
 
     val fileSize
         get() = file.fileSize
@@ -53,14 +50,13 @@ class FileHandle(val fileHandleId : Int, val client : ClientInfo, val file : Fil
     var onProgressUpdate : ((FileHandle) -> Unit)? = null
     var onComplete : ((FileHandle) -> Unit)? = null
 
-    lateinit var inputStream: InputStream
-        private set
+    private lateinit var inputStream: InputStream
 
-    val queue = LinkedBlockingQueue<Long>(MAX_QUEUE_CHUNKS)
+    private val queue = LinkedBlockingQueue<Long>(MAX_QUEUE_CHUNKS)
 
     fun start() {
         if (!client.active) {
-            me.fungames.filesender.error("File Share $fileHandleId failed: Client was not active anymore")
+            error("File Share $fileHandleId failed: Client was not active anymore")
             state = FileHandleState.FAILED
             onError?.invoke(FailReason.CLIENT_DISCONNECTED)
         } else {
@@ -83,7 +79,7 @@ class FileHandle(val fileHandleId : Int, val client : ClientInfo, val file : Fil
         try {
             inputStream = file.openInputStream()
         } catch (e : Exception) {
-            me.fungames.filesender.error("File Share $fileHandleId failed: Failed to open input stream", e)
+            error("File Share $fileHandleId failed: Failed to open input stream", e)
             state = FileHandleState.FAILED
             onError?.invoke(FailReason.FAILED_TO_OPEN_INPUT_STREAM)
             return
@@ -99,7 +95,7 @@ class FileHandle(val fileHandleId : Int, val client : ClientInfo, val file : Fil
             buffer.putLong(i)
             buffer.position(0)
             if (!client.active) {
-                me.fungames.filesender.error("File Share $fileHandleId failed: Client was not active anymore")
+                error("File Share $fileHandleId failed: Client was not active anymore")
                 state = FileHandleState.FAILED
                 onError?.invoke(FailReason.CLIENT_DISCONNECTED)
                 return
@@ -111,7 +107,7 @@ class FileHandle(val fileHandleId : Int, val client : ClientInfo, val file : Fil
             //this should block if the queue is full
             val success = queue.offer(i, QUEUE_TIMEOUT, TimeUnit.MILLISECONDS)
             if (!success) {
-                me.fungames.filesender.error("File Share $fileHandleId failed: Timeout while waiting for queue")
+                error("File Share $fileHandleId failed: Timeout while waiting for queue")
                 state = FileHandleState.FAILED
                 onError?.invoke(FailReason.TIMEOUT)
                 return
@@ -132,9 +128,9 @@ class FileHandle(val fileHandleId : Int, val client : ClientInfo, val file : Fil
         onProgressUpdate?.invoke(this)
     }
 
-    fun clientDenied() {
+    fun clientDenied(reason: FailReason) {
         state = FileHandleState.FAILED
-        onError?.invoke(FailReason.CLIENT_DENIED)
+        onError?.invoke(reason)
     }
 
     private fun calculateChunkCount(): Long {

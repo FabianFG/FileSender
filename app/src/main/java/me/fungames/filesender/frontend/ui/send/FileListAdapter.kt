@@ -1,7 +1,6 @@
 package me.fungames.filesender.frontend.ui.send
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.text.format.Formatter
 import android.view.LayoutInflater
 import android.view.View
@@ -11,7 +10,7 @@ import android.widget.Button
 import android.widget.TextView
 import me.fungames.filesender.R
 
-class FileListAdapter(val sendActivity: SendActivity, val resource: Int, objects: List<FileInfoContainer>) :
+class FileListAdapter(private val sendActivity: SendActivity, private val resource: Int, objects: List<FileInfoContainer>) :
     ArrayAdapter<FileInfoContainer>(sendActivity, resource, objects) {
 
     class ViewHolder(val fileName : TextView, val removeFile : Button)
