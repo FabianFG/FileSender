@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="me.fungames.filesender">
+    package="me.fabianfg.filesender">
 
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -22,12 +22,12 @@
         android:theme="@style/AppTheme"
         android:fullBackupContent="true"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".frontend.ui.history.FileHistoryActivity" android:label="@string/file_history" />
-        <activity android:name=".frontend.ui.help.HelpActivity" android:label="@string/help" />
+        <activity android:name="me.fabianfg.filesender.frontend.ui.history.FileHistoryActivity" android:label="@string/file_history" />
+        <activity android:name="me.fabianfg.filesender.frontend.ui.help.HelpActivity" android:label="@string/help" />
 
         <provider
-            android:name=".frontend.provider.GenericFileProvider"
-            android:authorities="me.fungames.provider"
+            android:name="me.fabianfg.filesender.frontend.provider.GenericFileProvider"
+            android:authorities="me.fabianfg.provider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
@@ -35,19 +35,19 @@
                 android:resource="@xml/provider_paths" />
         </provider>
 
-        <activity android:name=".frontend.ui.appsend.AppSendActivity" />
+        <activity android:name="me.fabianfg.filesender.frontend.ui.appsend.AppSendActivity" />
         <activity
-            android:name=".frontend.ui.receive.ReceiveActivity"
+            android:name="me.fabianfg.filesender.frontend.ui.receive.ReceiveActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_receive"
             android:launchMode="singleInstance"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".frontend.ui.receive.ScanQrActivity"
+            android:name="me.fabianfg.filesender.frontend.ui.receive.ScanQrActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".frontend.ui.send.SendActivity"
+            android:name="me.fabianfg.filesender.frontend.ui.send.SendActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_send"
             android:launchMode="singleInstance"
@@ -67,7 +67,7 @@
                 <data android:mimeType="*/*" />
             </intent-filter>
         </activity>
-        <activity android:name=".frontend.ui.main.MainActivity"
+        <activity android:name="me.fabianfg.filesender.frontend.ui.main.MainActivity"
             android:configChanges="keyboardHidden|orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -76,7 +76,7 @@
             </intent-filter>
         </activity>
         <receiver
-            android:name=".frontend.ui.receive.NetworkStateChanged"
+            android:name="me.fabianfg.filesender.frontend.ui.receive.NetworkStateChanged"
             android:exported="true">
             <intent-filter android:priority="100">
                 <action android:name="android.net.wifi.STATE_CHANGE" />

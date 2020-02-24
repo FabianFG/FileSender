@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">File Sender</string>
+    <string name="app_name" translatable="false">FileCatch</string>
     <string name="title_activity_send">Send with FileSender</string>
     <string name="action_settings">Settings</string>
     <string name="kick">Kick</string>
@@ -116,7 +116,14 @@
     <string name="about_issues" >Found an issue? Email me or open an issue on github</string>
     <string name="about_github" translatable="false">GitHub: https://github.com/FunGamesLeaks/FileSender/</string>
     <string name="about_betatester">Thanks to all betatesters:</string>
-    <string name="about_betatester_body" translatable="false">Jan E., Jannis V., Jonah F., Jonas S., Lukas H., Nils W., Philipp H.</string>
+    <string name="about_betatester_body" translatable="false">Jan, Jannis, Jonah, Jonas, Lukas, Nils, Philipp</string>
     <string name="about">About</string>
     <string name="version_format" translatable="false">v%s</string>
+    <string name="send_app">Didn\'t your friends install FileCatch?</string>
+    <string name="send_app_button">Send FileCatch</string>
+    <string name="fail_reason_client_disconnected">The device got disconnected</string>
+    <string name="fail_reason_client_denied">The device rejected the file share</string>
+    <string name="fail_reason_client_not_enough_storage">The device did not have enough storage to receive this file</string>
+    <string name="fail_reason_timeout">The device did not answer in time</string>
+    <string name="fail_reason_failed_to_open_input_stream">The file could not be read</string>
 </resources>

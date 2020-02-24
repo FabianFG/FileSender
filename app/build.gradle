@@ -7,11 +7,11 @@ apply plugin: 'kotlin-android-extensions'
 android {
     compileSdkVersion 29
     defaultConfig {
-        applicationId "me.fungames.filesender"
+        applicationId "me.fabianfg.filecatch"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 5
-        versionName "1.0.1"
+        versionCode 6
+        versionName "0.9.9"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -27,6 +27,10 @@ android {
 
     kotlinOptions {
        jvmTarget = JavaVersion.VERSION_1_8.toString()
+    }
+
+    lintOptions {
+        abortOnError false
     }
 }
 

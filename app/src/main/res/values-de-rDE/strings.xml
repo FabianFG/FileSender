@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">File Sender</string>
     <string name="title_activity_send">Senden mit FileSender</string>
     <string name="kick">Kicken</string>
     <string name="files">Dateien</string>
@@ -117,4 +116,11 @@
     <string name="about_issues">Haben Sie ein Problem gefunden? Schreiben Sie mir eine E-Mail oder eröffnen Sie einen Github-Issue</string>
     <string name="about_betatester">Danke an alle Betatester:</string>
     <string name="about">Über</string>
+    <string name="send_app">Haben Ihre Freunde FileCatch nicht installiert?</string>
+    <string name="send_app_button">Sende FileCatch</string>
+    <string name="fail_reason_client_denied">Das Gerät hat die Dateiübertragung abgelehnt</string>
+    <string name="fail_reason_client_disconnected">Das Gerät hat die Verbindung verloren</string>
+    <string name="fail_reason_client_not_enough_storage">Das Gerät hat nicht genug Speicherplatz um diese Datei zu empfangen</string>
+    <string name="fail_reason_failed_to_open_input_stream">Die Datei konnte nicht gelesen werden</string>
+    <string name="fail_reason_timeout">Das Gerät hat nicht rechtzeitig geantwortet</string>
 </resources>
