@@ -138,6 +138,15 @@ class SendActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         }
     }
 
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        when (intent?.action) {
+            Intent.ACTION_SEND -> handleFileShare(intent)
+            Intent.ACTION_SEND_MULTIPLE -> handleMultipleFileShare(intent)
+        }
+        intent?.let { handleApkShare(it) }
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     private fun startUsingLocalOnlyHotspot(manager: WifiManager) {
         manager.startLocalOnlyHotspot(
@@ -438,7 +447,7 @@ class SendActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                         countDown.cancel()
                         AlertDialog.Builder(this@SendActivity)
                             .setTitle(R.string.fileshare_failed)
-                            .setMessage(it.name)
+                            .setMessage(message)
                             .show()
                     }
                 }

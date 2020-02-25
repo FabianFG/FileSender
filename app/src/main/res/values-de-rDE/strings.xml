@@ -111,8 +111,7 @@
     <string name="failed_to_stop_hotspot_try_manually">Stoppen des Hotspots fehlgeschlagen. Wenn Sie den Hotspot deaktivieren möchten, müssen Sie dies manuell machen</string>
     <string name="no_files_received_yet">Es sind noch keine Dateien empfangen worden</string>
     <string name="file_history">Dateiverlauf</string>
-    <string name="about_email">E-Mail: mcdtloeser@gmail.com</string>
-    <string name="about_author">Autor: Fabian Reif</string>
+    <string name="about_author">Autor: Fabian FG</string>
     <string name="about_issues">Haben Sie ein Problem gefunden? Schreiben Sie mir eine E-Mail oder eröffnen Sie einen Github-Issue</string>
     <string name="about_betatester">Danke an alle Betatester:</string>
     <string name="about">Über</string>
@@ -123,4 +122,5 @@
     <string name="fail_reason_client_not_enough_storage">Das Gerät hat nicht genug Speicherplatz um diese Datei zu empfangen</string>
     <string name="fail_reason_failed_to_open_input_stream">Die Datei konnte nicht gelesen werden</string>
     <string name="fail_reason_timeout">Das Gerät hat nicht rechtzeitig geantwortet</string>
+    <string name="about_icon">Icon erstellt von https://www.flaticon.com/authors/those-icons</string>
 </resources>

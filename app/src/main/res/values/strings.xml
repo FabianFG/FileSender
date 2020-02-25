@@ -111,8 +111,8 @@
     <string name="failed_to_stop_hotspot_try_manually">Failed to stop hotspot. If you want to disable it, you have to do it manually</string>
     <string name="no_files_received_yet">No files received yet</string>
     <string name="file_history">File History</string>
-    <string name="about_email">Email: mcdtloeser@gmail.com</string>
-    <string name="about_author">Author: Fabian Reif</string>
+    <string name="about_email" translatable="false">Email: fabianfg.dev@gmail.com</string>
+    <string name="about_author">Author: Fabian FG</string>
     <string name="about_issues" >Found an issue? Email me or open an issue on github</string>
     <string name="about_github" translatable="false">GitHub: https://github.com/FunGamesLeaks/FileSender/</string>
     <string name="about_betatester">Thanks to all betatesters:</string>
@@ -126,4 +126,5 @@
     <string name="fail_reason_client_not_enough_storage">The device did not have enough storage to receive this file</string>
     <string name="fail_reason_timeout">The device did not answer in time</string>
     <string name="fail_reason_failed_to_open_input_stream">The file could not be read</string>
+    <string name="about_icon">Icon made by https://www.flaticon.com/authors/those-icons</string>
 </resources>
