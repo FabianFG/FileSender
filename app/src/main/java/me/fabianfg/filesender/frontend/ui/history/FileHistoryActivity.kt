@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceManager
 import kotlinx.android.synthetic.main.activity_file_history.*
 import me.fabianfg.filesender.R
+import me.fabianfg.filesender.config.update
 import me.fabianfg.filesender.frontend.ui.receive.ReceiveActivity
 import me.fabianfg.filesender.utils.checkSelfPermissionCompat
 import java.io.File
@@ -32,9 +33,11 @@ class FileHistoryActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        update(this)
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this)
         sharedPrefs.getStringSet("file_receive_history", emptySet())
         requestStoragePermission()
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
         setContentView(R.layout.activity_file_history)
         adapter = FileHistoryListAdapter(this, R.layout.file_history_list_item, files)
         historyListView.adapter = adapter
@@ -42,6 +45,11 @@ class FileHistoryActivity : AppCompatActivity() {
         if (checkSelfPermissionCompat(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
             updateFileList()
         }
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        finish()
+        return true
     }
 
     private fun updateFileList() {

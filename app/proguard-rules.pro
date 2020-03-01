@@ -19,3 +19,10 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+-keep class me.fabianfg.filesender.model.** { *; }
+-keep class me.fabianfg.filesender.server.BasicFileDescriptor { *; }
+-keep class me.fabianfg.filesender.server.FileDescriptor { *; }
+-keep class me.fabianfg.filesender.server.CloseCode { *; }
+-keep enum me.fabianfg.filesender.server.FailReason { *; }
+-keep class com.google.gson.JsonElement

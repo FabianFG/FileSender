@@ -6,7 +6,6 @@ import kotlinx.coroutines.launch
 import me.fabianfg.filesender.*
 import me.fabianfg.filesender.model.Packet
 import me.fabianfg.filesender.model.ServerInfo
-import me.fabianfg.filesender.model.StatusCode
 import me.fabianfg.filesender.model.payloads.*
 import org.java_websocket.WebSocket
 import org.java_websocket.handshake.ClientHandshake
@@ -141,19 +140,19 @@ abstract class Server(val name : String, val version : String, port : Int) : Web
 
     private fun authClient(conn: WebSocket, authPacket: AuthPacket) {
         if (unauthorizedClients.containsKey(conn)) {
-            if (authPacket.clientVersion != version) {
+            /*if (authPacket.clientVersion != version) {
                 warn("Denied auth for client ${authPacket.clientName}, client version: ${authPacket.clientVersion} != server version: $version")
                 conn.sendPacket(AuthDeniedPacket(StatusCode.CLIENT_VERSION_NOT_COMPATIBLE, "Client has an incompatible client version ${authPacket.clientVersion}, server is on version $version", serverInfo))
-            } else {
-                val client = ClientInfo(nextClientId, authPacket.clientName, conn)
-                nextClientId++
-                unauthorizedClients.remove(conn)
-                authorizedClientsBySocket[conn] = client
-                authorizedClients[client.clientId] = client
-                conn.sendPacket(AuthAcceptedPacket(client.clientId, client.clientName, serverInfo))
-                onClientConnected(client)
-                conn.sendPacket(FileListUpdatePacket(files))
-            }
+            } else {*/
+            val client = ClientInfo(nextClientId, authPacket.clientName, conn)
+            nextClientId++
+            unauthorizedClients.remove(conn)
+            authorizedClientsBySocket[conn] = client
+            authorizedClients[client.clientId] = client
+            conn.sendPacket(AuthAcceptedPacket(client.clientId, client.clientName, serverInfo))
+            onClientConnected(client)
+            conn.sendPacket(FileListUpdatePacket(files))
+            //}
         } else {
             warn("Already authenticated client is trying to authenticate again as ${authPacket.clientName}")
         }
@@ -216,6 +215,7 @@ abstract class Server(val name : String, val version : String, port : Int) : Web
     ) : ShareListeners
 
     private fun broadcastPacket(payload : Any) {
+        info("Broadcasting packet:  $payload")
         authorizedClients.values.forEach {
             it.webSocket.sendPacket(payload)
         }

@@ -8,13 +8,12 @@
     android:padding="5dp">
 
     <ImageView
-        android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/add_app"
         app:srcCompat="@mipmap/ic_launcher" />
 
     <TextView
-        android:id="@+id/aboutName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/app_name"
@@ -32,7 +31,6 @@
         android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/aboutAuthor"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingStart="10dp"
@@ -42,7 +40,6 @@
         android:textSize="14sp" />
 
     <TextView
-        android:id="@+id/aboutEmail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:autoLink="email"
@@ -53,7 +50,6 @@
         android:textSize="14sp" />
 
     <TextView
-        android:id="@+id/aboutGitHub"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:autoLink="web"
@@ -64,7 +60,6 @@
         android:textSize="14sp" />
 
     <TextView
-        android:id="@+id/aboutIssues"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingStart="10dp"
@@ -74,7 +69,6 @@
         android:textSize="14sp" />
 
     <TextView
-        android:id="@+id/aboutIcon"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:autoLink="web"
@@ -85,7 +79,6 @@
         android:textSize="14sp" />
 
     <TextView
-        android:id="@+id/aboutBetatester"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingStart="10dp"
@@ -95,7 +88,6 @@
         android:textSize="14sp" />
 
     <TextView
-        android:id="@+id/aboutBetatesterBody"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingStart="10dp"

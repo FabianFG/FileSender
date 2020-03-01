@@ -6,4 +6,5 @@ import java.io.File
 
 class ApkFileDescriptor(@Expose(serialize = false, deserialize = false) val file : File, @Expose(serialize = false, deserialize = false) val appName : String) : FileDescriptor(appName, file.length()) {
     override fun openInputStream() = file.inputStream()
+    override fun toString() = appName
 }

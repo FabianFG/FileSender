@@ -14,7 +14,6 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/btn_send"
             style="@style/Widget.AppCompat.Button.Borderless.Colored"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -24,7 +23,6 @@
             android:text="@string/send" />
 
         <Button
-            android:id="@+id/btn_receive"
             style="@style/Widget.AppCompat.Button.Borderless.Colored"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -34,7 +32,6 @@
             android:text="@string/receive" />
 
         <Button
-            android:id="@+id/btn_history"
             style="@style/Widget.AppCompat.Button.Borderless.Colored"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -53,7 +50,6 @@
         android:paddingTop="20dp">
 
         <TextView
-            android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"

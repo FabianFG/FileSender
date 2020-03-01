@@ -3,6 +3,14 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="5dp"
+        android:text="@string/scan_this_qr"
+        android:textAlignment="center" />
+
     <ImageView
         android:id="@+id/qrCodeView"
         android:layout_width="wrap_content"

@@ -1,6 +1,7 @@
 package me.fabianfg.filesender.client
 
 import com.google.gson.JsonParseException
+import me.fabianfg.filesender.debug
 import me.fabianfg.filesender.gson
 import me.fabianfg.filesender.info
 import me.fabianfg.filesender.model.Packet
@@ -14,7 +15,9 @@ import java.net.URI
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
-abstract class Client(val name : String, private val clientVersion : String, url : String) : WebSocketClient(URI.create(url)) {
+abstract class Client(val name : String, private val clientVersion : String, uri: URI) : WebSocketClient(uri) {
+
+    constructor(name: String, clientVersion: String, url : String) : this(name, clientVersion, URI.create(url))
 
     abstract fun reviewFileRequest(packet: FileShareRequestPacket)
     abstract fun onLogin(packet: AuthAcceptedPacket)
@@ -63,6 +66,7 @@ abstract class Client(val name : String, private val clientVersion : String, url
     private fun onPacket(packet: Packet) {
         try {
             val clazz = Class.forName(packet.className)
+            debug("Receive ${packet.className.substringAfterLast(".")} Json: " + packet.payload)
             when(val payload = gson.fromJson(packet.payload, clazz)!!) {
                 is AuthAcceptedPacket -> authAccepted(payload)
                 is AuthDeniedPacket -> authDenied(payload)
@@ -76,6 +80,7 @@ abstract class Client(val name : String, private val clientVersion : String, url
     }
 
     private fun fileListUpdate(packet: FileListUpdatePacket) {
+        info("Received file list update: $packet")
         files = packet.files
         onFileListUpdate(packet.files)
     }

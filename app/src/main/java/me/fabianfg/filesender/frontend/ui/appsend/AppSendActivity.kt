@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_app_send.*
 import me.fabianfg.filesender.R
+import me.fabianfg.filesender.config.update
 
 class AppSendActivity : AppCompatActivity() {
 
@@ -18,11 +19,18 @@ class AppSendActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        update(this)
         setContentView(R.layout.activity_app_send)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
         val scannedApps = packageManager.getInstalledApplications(0).filter { (it.flags and ApplicationInfo.FLAG_SYSTEM) == 0 }.sortedBy { it.loadLabel(packageManager).toString() }
         apps.addAll(scannedApps)
         adapter = AppListAdapter(this, R.layout.app_list_item, apps)
         appListView.adapter = adapter
         adapter.notifyDataSetChanged()
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        finish()
+        return true
     }
 }

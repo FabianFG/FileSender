@@ -1,20 +1,18 @@
 <resources>
     <string name="app_name" translatable="false">FileCatch</string>
-    <string name="title_activity_send">Send with FileSender</string>
-    <string name="action_settings">Settings</string>
+    <string name="title_activity_send">Send</string>
     <string name="kick">Kick</string>
     <string name="con_clients">Connected Devices: %d</string>
     <string name="devices">Devices</string>
     <string name="files">Files</string>
     <string name="remove">Remove</string>
-    <string name="file_select">Select a file</string>
     <string name="sharing_file">Sharing File…</string>
     <string name="fileshare_failed">File share Failed</string>
     <string name="waiting_for_client">Waiting for client…</string>
     <string name="select_client">Select a device</string>
     <string name="no_files">No files selected yet</string>
     <string name="no_clients">No Devices connected yet</string>
-    <string name="title_activity_receive">ReceiveActivity</string>
+    <string name="title_activity_receive">Receive</string>
     <string name="permission_denied">Required permission denied</string>
     <string name="permission_denied_body">Permission is needed to save received files. Please grant it</string>
     <string name="ok">OK</string>
@@ -106,7 +104,6 @@
     <string name="help_adding_app_3">• The apk of the app will be added to the list and will also be shown on every connected device now</string>
     <string name="help_sending">3. Sending</string>
     <string name="help_sending_1">• You can either click on one of your selected files and then select a device to send it to or wait for a device to request it</string>
-    <string name="android_10_wifi_warning">Starting with Android 10 the app cannot activate wifi itself. Please activate wifi</string>
     <string name="failed_to_start_hotspot_try_manually">Failed to start hotspot. Please try again or enable it manually</string>
     <string name="failed_to_stop_hotspot_try_manually">Failed to stop hotspot. If you want to disable it, you have to do it manually</string>
     <string name="no_files_received_yet">No files received yet</string>
@@ -127,4 +124,5 @@
     <string name="fail_reason_timeout">The device did not answer in time</string>
     <string name="fail_reason_failed_to_open_input_stream">The file could not be read</string>
     <string name="about_icon">Icon made by https://www.flaticon.com/authors/those-icons</string>
+    <string name="scan_this_qr">Scan this QR-Code on other devices to connect</string>
 </resources>

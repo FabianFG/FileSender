@@ -18,6 +18,7 @@ import androidx.core.content.FileProvider
 import de.psdev.licensesdialog.LicensesDialog
 import kotlinx.android.synthetic.main.activity_main.*
 import me.fabianfg.filesender.R
+import me.fabianfg.filesender.config.update
 import me.fabianfg.filesender.frontend.ui.help.HelpActivity
 import me.fabianfg.filesender.frontend.ui.history.FileHistoryActivity
 import me.fabianfg.filesender.frontend.ui.receive.ReceiveActivity
@@ -39,7 +40,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
+        update(this)
         licensesDialog = LicensesDialog.Builder(this)
             .setNotices(R.raw.notices)
             .setIncludeOwnLicense(true)

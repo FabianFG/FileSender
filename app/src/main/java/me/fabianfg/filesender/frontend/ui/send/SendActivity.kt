@@ -34,10 +34,13 @@ import kotlinx.android.synthetic.main.fileshare_waiting_for_client_dialog.*
 import kotlinx.coroutines.*
 import me.fabianfg.filesender.CLIENT_TIMEOUT
 import me.fabianfg.filesender.R
+import me.fabianfg.filesender.config.getName
 import me.fabianfg.filesender.config.getServerPort
 import me.fabianfg.filesender.config.getVersion
+import me.fabianfg.filesender.config.update
 import me.fabianfg.filesender.frontend.receivers.ApStateReceiver
 import me.fabianfg.filesender.frontend.ui.appsend.AppSendActivity
+import me.fabianfg.filesender.frontend.ui.main.MainActivity
 import me.fabianfg.filesender.server.*
 import me.fabianfg.filesender.utils.*
 import java.io.File
@@ -79,9 +82,10 @@ class SendActivity : AppCompatActivity(), CoroutineScope by MainScope() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_send)
+        update(this)
         apStateReceiver = ApStateReceiver(this)
         registerReceiver(apStateReceiver, IntentFilter("android.net.wifi.WIFI_AP_STATE_CHANGED"))
-        fileServer = FileServer(this, Settings.Secure.getString(contentResolver, "bluetooth_name"), getVersion(), getServerPort())
+        fileServer = FileServer(this, getName(), getVersion(), getServerPort())
         setSupportActionBar(toolbar)
         topTitle = getString(R.string.inactive)
         sendInfoLayout.visibility = View.GONE
@@ -92,7 +96,7 @@ class SendActivity : AppCompatActivity(), CoroutineScope by MainScope() {
             if (isRunning) {
                 stopServer()
             } else {
-                if (checkSelfPermissionCompat(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                if (checkSelfPermissionCompat(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                     val locManager = applicationContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
                     if (!locManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
                         startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
@@ -128,14 +132,21 @@ class SendActivity : AppCompatActivity(), CoroutineScope by MainScope() {
             when(it.id) {
                 R.id.fab_add_app -> startActivityForResult(Intent(this, AppSendActivity::class.java), appOpenRequestCode)
                 R.id.fab_add_file -> {
+
                     val intent = Intent()
                         .setType("*/*")
                         .setAction(Intent.ACTION_GET_CONTENT)
-                    startActivityForResult(Intent.createChooser(intent, getString(R.string.file_select)), fileOpenRequestCode)
+                        .putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+                        .addCategory(Intent.CATEGORY_OPENABLE)
+                    startActivityForResult(intent, fileOpenRequestCode)
                 }
             }
             false
         }
+    }
+
+    override fun onBackPressed() {
+        startActivity(Intent(this, MainActivity::class.java))
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -220,8 +231,8 @@ class SendActivity : AppCompatActivity(), CoroutineScope by MainScope() {
     }
 
     private fun requestLocationPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION), locationPermissionRequestCode)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), locationPermissionRequestCode)
         }
     }
 
@@ -241,7 +252,7 @@ class SendActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         clientListContent.clear()
         clientListAdapter.notifyDataSetChanged()
         fileServer.stop()
-        fileServer = FileServer(this, Settings.Secure.getString(contentResolver, "bluetooth_name"), getVersion(), getServerPort())
+        fileServer = FileServer(this, getName(), getVersion(), getServerPort())
         fileListContent.forEach {
             val id = fileServer.addFile(it.descriptor)
             it.id = id
@@ -333,9 +344,15 @@ class SendActivity : AppCompatActivity(), CoroutineScope by MainScope() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == fileOpenRequestCode && resultCode == RESULT_OK && data != null) {
-            val fileUri = data.data
-            if (fileUri != null) {
-                registerNewFile(fileUri)
+            val clipData = data.clipData
+            if (clipData != null) {
+                for (i in 0 until clipData.itemCount)
+                    registerNewFile(clipData.getItemAt(i).uri)
+            } else {
+                val fileUri = data.data
+                if (fileUri != null) {
+                    registerNewFile(fileUri)
+                }
             }
         } else if (requestCode == appOpenRequestCode && resultCode == Activity.RESULT_OK && data != null) {
             handleApkShare(data)
@@ -347,7 +364,7 @@ class SendActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
-        if (requestCode == locationPermissionRequestCode && permissions.isNotEmpty() && permissions[0] == Manifest.permission.ACCESS_COARSE_LOCATION && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        if (requestCode == locationPermissionRequestCode && permissions.isNotEmpty() && permissions[0] == Manifest.permission.ACCESS_FINE_LOCATION && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             fab.performClick()
         }
     }

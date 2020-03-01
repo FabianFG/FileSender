@@ -5,6 +5,7 @@ import java.net.Socket
 
 fun checkHostAvailable(address : String, port : Int, timeout : Int) : Boolean {
     val s = Socket()
+    s.reuseAddress = true
     return try {
         s.connect(InetSocketAddress(address, port), timeout)
         s.close()

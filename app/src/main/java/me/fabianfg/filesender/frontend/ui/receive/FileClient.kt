@@ -30,6 +30,7 @@ class FileClient(private val receiveActivity: ReceiveActivity, url : String, nam
     override fun onError(ex: Exception) {
         when(ex) {
             is ConnectException -> receiveActivity.onConnectFailed(ex)
+            //else -> receiveActivity.onConnectFailed(ex)
             else -> Log.e(TAG, "Client had an uncaught exception", ex)
         }
     }

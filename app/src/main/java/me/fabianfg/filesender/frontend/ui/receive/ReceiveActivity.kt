@@ -20,6 +20,7 @@ import android.text.format.Formatter
 import android.util.Log
 import android.view.View
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.edit
@@ -32,10 +33,9 @@ import kotlinx.coroutines.*
 import me.fabianfg.filesender.CLIENT_TIMEOUT
 import me.fabianfg.filesender.R
 import me.fabianfg.filesender.client.Client
-import me.fabianfg.filesender.config.doOpenFilesAfterReceiving
-import me.fabianfg.filesender.config.getMaxConnectAttempts
-import me.fabianfg.filesender.config.getServerPort
+import me.fabianfg.filesender.config.*
 import me.fabianfg.filesender.frontend.receivers.WifiReceiver
+import me.fabianfg.filesender.frontend.ui.main.MainActivity
 import me.fabianfg.filesender.model.payloads.AuthAcceptedPacket
 import me.fabianfg.filesender.model.payloads.AuthDeniedPacket
 import me.fabianfg.filesender.model.payloads.FileShareRequestPacket
@@ -45,8 +45,7 @@ import me.fabianfg.filesender.server.FailReason
 import me.fabianfg.filesender.utils.*
 import java.io.File
 import java.io.IOException
-import java.net.ConnectException
-import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
 
@@ -86,7 +85,7 @@ class ReceiveActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
     private val fileListContent = mutableListOf<FileInfoContainer>()
 
-    private var onConnectionLostListeners = CopyOnWriteArrayList<() -> Unit>()
+    private var onStopClientListeners = ConcurrentHashMap<() -> Unit, Boolean>()
 
     private lateinit var fileListAdapter : ArrayAdapter<FileInfoContainer>
 
@@ -95,6 +94,8 @@ class ReceiveActivity : AppCompatActivity(), CoroutineScope by MainScope() {
     private lateinit var networkStateChanged : NetworkStateChanged
 
     private lateinit var sharedPrefs : SharedPreferences
+
+    private var overrideGateway : String? = null
 
     fun onScanQrCodeButtonClicked(view: View) {
         unused(view)
@@ -116,7 +117,7 @@ class ReceiveActivity : AppCompatActivity(), CoroutineScope by MainScope() {
             launch(Dispatchers.IO) {
                 val conn = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
                 if (conn.getNetworkInfo(ConnectivityManager.TYPE_MOBILE)?.isConnectedOrConnecting == true) {
-                    this@ReceiveActivity.launch {
+                    runOnUiThread {
                         AlertDialog.Builder(this@ReceiveActivity).setTitle(R.string.warning).setMessage(R.string.mobile_data_warning).show()
                         wifiWaitDialog?.cancel()
                     }
@@ -125,7 +126,7 @@ class ReceiveActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                         Log.d(TAG, "Connection attempt $i...")
                         if (checkHostAvailable(getServerIpAddr()?:throw IOException("Failed to obtain server ip address"), getServerPort(), 3000)) {
                             Log.d(TAG, "Connection attempt $i was successful")
-                            this@ReceiveActivity.launch { startClient() }
+                            runOnUiThread { startClient() }
                             break
                         }
                         delay(1000)
@@ -140,10 +141,11 @@ class ReceiveActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this)
         setContentView(R.layout.activity_receive)
         setSupportActionBar(toolbar)
+        update(this)
         topTitle = getString(R.string.inactive)
         fileList.emptyView = emptyFiles
         serverName.visibility = View.GONE
-        fileClient = FileClient(this, "ws://${getServerIpAddr()?:throw IOException("Failed to obtain server ip address")}:${getServerPort()}", Settings.Secure.getString(contentResolver, "bluetooth_name"))
+        fileClient = FileClient(this, "ws://${getServerIpAddr()?:throw IOException("Failed to obtain server ip address")}:${getServerPort()}", getName())
         fab.setOnClickListener {
             if (isRunning) {
                 stopClient()
@@ -167,6 +169,10 @@ class ReceiveActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         registerReceiver(networkStateChanged, IntentFilter(WifiManager.NETWORK_STATE_CHANGED_ACTION))
     }
 
+    override fun onBackPressed() {
+        startActivity(Intent(this, MainActivity::class.java))
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         unregisterReceiver(networkStateChanged)
@@ -176,9 +182,15 @@ class ReceiveActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
     private fun stopClient() {
         //Stop the client
+        Log.d(TAG, "Stopping client")
         fileClient.close()
-        fileClient = FileClient(this, "ws://${getServerIpAddr()?:throw IOException("Failed to obtain server ip address")}:${getServerPort()}", Settings.Secure.getString(contentResolver, "bluetooth_name"))
-        onConnectionLostListeners.forEach { it() }
+        if (wifiWaitDialog?.isShowing == false) {
+            onStopClientListeners.forEach { (it, unregister) ->
+                it()
+                if (unregister)
+                    unregisterOnClientStop(it)
+            }
+        }
         isRunning = false
         fileListContent.clear()
         runOnUiThread {
@@ -192,6 +204,7 @@ class ReceiveActivity : AppCompatActivity(), CoroutineScope by MainScope() {
             topTitle = getString(R.string.inactive)
             serverName.visibility = View.GONE
         }
+        Log.d(TAG, "Stopped client")
     }
 
     private fun startClient() {
@@ -199,11 +212,16 @@ class ReceiveActivity : AppCompatActivity(), CoroutineScope by MainScope() {
             return
         isRunning = true
         fab.isClickable = false
-        if (!fileClient.isOpen) {
-            launch(Dispatchers.IO) {
-                if (!fileClient.connectBlocking(1000, TimeUnit.MILLISECONDS)) {
-                    stopClient()
-                }
+        val gatewayIP = overrideGateway ?: getServerIpAddr() ?: throw IOException("Failed to obtain server ip address")
+        Log.d(TAG, "Override Gateway: $overrideGateway")
+        Log.d(TAG, "Used IP: $gatewayIP")
+        fileClient = FileClient(this, "ws://$gatewayIP:${getServerPort()}", getName())
+        launch(Dispatchers.IO) {
+            Log.d(TAG,"Connect Blocking: 1000ms timeout")
+            if (!fileClient.connectBlocking(1000, TimeUnit.MILLISECONDS)) {
+                Log.d(TAG, "Failed to connect")
+            } else {
+                Log.d(TAG, "Connection succeeded")
             }
         }
         fab.setImageResource(android.R.drawable.ic_media_pause)
@@ -252,11 +270,15 @@ class ReceiveActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         fileClient.downloadFile(file.id)
     }
 
-    fun onConnectFailed(ex : ConnectException) {
+    fun onConnectFailed(ex : Exception) {
         val byQrConnect = wifiWaitDialog?.isShowing == true
         stopClient()
         if (byQrConnect) {
-            runOnUiThread { startClient() }
+            runOnUiThread {
+                Log.d(TAG, "${ex::class.java.simpleName}: ${ex.message}")
+                Log.d(TAG, "QR-Connect was still active, attempting to start again")
+                startClient()
+            }
         } else {
             runOnUiThread {
                 AlertDialog.Builder(this)
@@ -295,9 +317,12 @@ class ReceiveActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
     @SuppressLint("SetTextI18n")
     fun onFileShareRequest(packet: FileShareRequestPacket) = runOnUiThread {
-        val stat = StatFs(me.fabianfg.filesender.config.getDir())
+        Log.d(TAG, "Checking storage")
+        val stat = StatFs(getDir())
         val availableBytes = stat.blockSizeLong * stat.availableBlocksLong
+        Log.d(TAG, "Available storage: ${Formatter.formatFileSize(this, availableBytes)}")
         if (availableBytes < packet.fileSize) {
+            Log.d(TAG, "Not enough storage")
             fileClient.fileShareRequestHandled(packet, false, null, FailReason.CLIENT_NOT_ENOUGH_STORAGE)
             AlertDialog.Builder(this)
                 .setTitle(R.string.fileshare_failed)
@@ -334,12 +359,13 @@ class ReceiveActivity : AppCompatActivity(), CoroutineScope by MainScope() {
             dialog.cancel()
         }
 
-        registerOnConnectionLost(onConnLost)
+        registerOnClientStop(false, onConnLost)
 
         acceptDialog.yesButton.setOnClickListener {
             countDown.cancel()
             acceptDialog.cancel()
-            val info = Client.FileHandleInfo(me.fabianfg.filesender.config.getDir(),
+            val info = Client.FileHandleInfo(
+                getDir(),
                 /*onStart*/{
                     runOnUiThread {
                         dialog.show()
@@ -363,7 +389,7 @@ class ReceiveActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                     acceptDialog.cancel()
                     countDown.cancel()
                     dialog.cancel()
-                    unregisterOnConnectionLost(onConnLost)
+                    unregisterOnClientStop(onConnLost)
                     if (doOpenFilesAfterReceiving()) {
                         sharedPrefs.edit(true) {
                             val oldSet = sharedPrefs.getStringSet("file_receive_history", mutableSetOf())!!
@@ -375,7 +401,7 @@ class ReceiveActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                 }
             )
 
-            val file = File("${me.fabianfg.filesender.config.getDir()}/${packet.fileName}")
+            val file = File("${getDir()}/${packet.fileName}")
             if (file.exists()) {
                 AlertDialog.Builder(this)
                     .setTitle(R.string.warning)
@@ -385,7 +411,7 @@ class ReceiveActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                     }
                     .setNegativeButton(R.string.no) { _, _ ->
                         fileClient.fileShareRequestHandled(packet, false, info)
-                        unregisterOnConnectionLost(onConnLost)
+                        unregisterOnClientStop(onConnLost)
                     }
                     .show()
             } else {
@@ -396,18 +422,18 @@ class ReceiveActivity : AppCompatActivity(), CoroutineScope by MainScope() {
             countDown.cancel()
             acceptDialog.cancel()
             fileClient.fileShareRequestHandled(packet, false, null)
-            unregisterOnConnectionLost(onConnLost)
+            unregisterOnClientStop(onConnLost)
 
         }
         acceptDialog.show()
     }
 
-    private fun registerOnConnectionLost(onConnLost : () -> Unit) {
-        onConnectionLostListeners.add(onConnLost)
+    private fun registerOnClientStop(removeAfterInvoke : Boolean, onConnLost : () -> Unit) {
+        onStopClientListeners[onConnLost] = removeAfterInvoke
     }
 
-    private fun unregisterOnConnectionLost(onConnLost : () -> Unit) {
-        onConnectionLostListeners.remove(onConnLost)
+    private fun unregisterOnClientStop(onConnLost : () -> Unit) {
+        onStopClientListeners.remove(onConnLost)
     }
 
     private fun requestCameraPermission() {
@@ -460,7 +486,7 @@ class ReceiveActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             //TODO Untested code
             //We can't activate wifi on Android 10 anymore so request the user to do so
-            wifiWaitDialog?.setMessage(getString(R.string.android_10_wifi_warning))
+            //wifiWaitDialog?.setMessage(getString(R.string.android_10_wifi_warning))
             val onWifiEnabled = {
                 if (wifiReceiver != null)
                     runCatching {
@@ -471,19 +497,53 @@ class ReceiveActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                     .setSsid(ssid)
                     .setWpa2Passphrase(preSharedKey)
                     .build()
-                val request = NetworkRequest.Builder().setNetworkSpecifier(spec).build()
+                val request = NetworkRequest.Builder().addTransportType(NetworkCapabilities.TRANSPORT_WIFI).setNetworkSpecifier(spec).build()
                 val conn = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-                conn.requestNetwork(request, object: ConnectivityManager.NetworkCallback() {
+                val callback = object: ConnectivityManager.NetworkCallback() {
                     override fun onAvailable(network: Network) {
-                        wifiWaitDialog?.cancel()
-                        startClient()
+                        conn.bindProcessToNetwork(network)
+                        var correctGateway : String? = null
+                        val routes = conn.getLinkProperties(network)?.routes
+                        if (routes != null) {
+                            for (i in 0 until getMaxConnectAttempts()) {
+                                Log.d(TAG, "Connect Attempt $i...")
+                                for (route in routes) {
+                                    val gateway = route.gateway
+                                    if (gateway != null) {
+                                        if(checkHostAvailable(gateway.hostAddress, getServerPort(), 1000)) {
+                                            Log.d(TAG, "Found valid gateway out of routes")
+                                            correctGateway = gateway.hostAddress
+                                            break
+                                        }
+                                    }
+                                }
+                                if (correctGateway != null)
+                                    break
+                            }
+                            if (correctGateway == null)
+                                runOnUiThread { Toast.makeText(this@ReceiveActivity, "Did not find a valid gateway", Toast.LENGTH_LONG).show() }
+                        }
+                        this@ReceiveActivity.launch {
+                            wifiWaitDialog?.setMessage(getString(R.string.attempting_to_connect))
+                            overrideGateway = correctGateway
+                            startClient()
+                        }
                     }
 
                     override fun onLost(network: Network) {
-                        wifiWaitDialog?.cancel()
-                        stopClient()
+                        this@ReceiveActivity.launch {
+                            wifiWaitDialog?.cancel()
+                            stopClient()
+                        }
                     }
-                })
+                }
+
+                registerOnClientStop(true) {
+                    conn.bindProcessToNetwork(null)
+                    conn.unregisterNetworkCallback(callback)
+                    overrideGateway = null
+                }
+                conn.requestNetwork(request, callback)
             }
             if (wifiReceiver == null) {
                 wifiReceiver = WifiReceiver(onWifiEnabled)

@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="title_activity_send">Senden mit FileSender</string>
+    <string name="title_activity_send">Senden</string>
     <string name="kick">Kicken</string>
     <string name="files">Dateien</string>
     <string name="devices">Geräte</string>
     <string name="con_clients">Verbundene Geräte: %d</string>
-    <string name="action_settings">Einstellungen</string>
     <string name="remove">Entfernen</string>
-    <string name="file_select">Wähle eine Datei</string>
     <string name="sharing_file">Datei wird gesendet…</string>
     <string name="fileshare_failed">Dateiübertragung fehlgeschlagen</string>
     <string name="accept_title">Möchten Sie die Dateifreigabe akzeptieren?</string>
@@ -47,7 +45,7 @@
     <string name="server_closed">Server wurde beendet</string>
     <string name="server_start_failed">Server konnte nicht gestartet werden</string>
     <string name="starting">Wird gestartet</string>
-    <string name="title_activity_receive">ReceiveActivity</string>
+    <string name="title_activity_receive">Empfangen</string>
     <string name="waiting_for_client">Warten auf Gerät…</string>
     <string name="yes">Ja</string>
     <string name="abort">Abbrechen</string>
@@ -106,7 +104,6 @@
     <string name="help_starting_80_5">• Das wird Ihre Hotspot Einstellungen nicht verändern</string>
     <string name="help_starting_80_6">• Wichtig: Wenn andere Geräte den Hotspot nicht sehen können, überprüfen sie ob der Hotspot wirklich aktiviert ist indem sie in der Nachrichtenleiste nach dem Hotspot Symbol schauen oder in den Einstellungen nachgucken. Es scheint einen Bug in der Implementierung von diesem Feature auf manchen Geräten, der unvorhersehbares Beenden des Hotspots hervorruft</string>
     <string name="help_starting_manual">1.2 Vor Android 8.0</string>
-    <string name="android_10_wifi_warning">Ab Android 10 kann die App Wlan nicht mehr selbst aktivieren. Bitte aktivieren sie Wlan</string>
     <string name="failed_to_start_hotspot_try_manually">Start des Hotspots fehlgeschlagen. Bitte versuchen Sie es erneut oder aktivieren Sie ihn manuell</string>
     <string name="failed_to_stop_hotspot_try_manually">Stoppen des Hotspots fehlgeschlagen. Wenn Sie den Hotspot deaktivieren möchten, müssen Sie dies manuell machen</string>
     <string name="no_files_received_yet">Es sind noch keine Dateien empfangen worden</string>
@@ -123,4 +120,5 @@
     <string name="fail_reason_failed_to_open_input_stream">Die Datei konnte nicht gelesen werden</string>
     <string name="fail_reason_timeout">Das Gerät hat nicht rechtzeitig geantwortet</string>
     <string name="about_icon">Icon erstellt von https://www.flaticon.com/authors/those-icons</string>
+    <string name="scan_this_qr">Scannen Sie diesen QR-Code auf anderen Geräten zum Verbinden</string>
 </resources>
