@@ -35,7 +35,6 @@ import me.fabianfg.filesender.R
 import me.fabianfg.filesender.client.Client
 import me.fabianfg.filesender.config.*
 import me.fabianfg.filesender.frontend.receivers.WifiReceiver
-import me.fabianfg.filesender.frontend.ui.main.MainActivity
 import me.fabianfg.filesender.model.payloads.AuthAcceptedPacket
 import me.fabianfg.filesender.model.payloads.AuthDeniedPacket
 import me.fabianfg.filesender.model.payloads.FileShareRequestPacket
@@ -52,7 +51,6 @@ import kotlin.math.roundToInt
 
 class NetworkStateChanged(private val receiveActivity: ReceiveActivity) : BroadcastReceiver() {
 
-    @SuppressLint("UnsafeProtectedBroadcastReceiver")
     override fun onReceive(context: Context, intent: Intent) {
         val info = intent.getParcelableExtra<NetworkInfo>(WifiManager.EXTRA_NETWORK_INFO)
         if (info != null && info.isConnected) {
@@ -167,10 +165,6 @@ class ReceiveActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         }
         networkStateChanged = NetworkStateChanged(this)
         registerReceiver(networkStateChanged, IntentFilter(WifiManager.NETWORK_STATE_CHANGED_ACTION))
-    }
-
-    override fun onBackPressed() {
-        startActivity(Intent(this, MainActivity::class.java))
     }
 
     override fun onDestroy() {

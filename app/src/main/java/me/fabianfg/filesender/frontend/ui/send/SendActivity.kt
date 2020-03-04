@@ -40,7 +40,6 @@ import me.fabianfg.filesender.config.getVersion
 import me.fabianfg.filesender.config.update
 import me.fabianfg.filesender.frontend.receivers.ApStateReceiver
 import me.fabianfg.filesender.frontend.ui.appsend.AppSendActivity
-import me.fabianfg.filesender.frontend.ui.main.MainActivity
 import me.fabianfg.filesender.server.*
 import me.fabianfg.filesender.utils.*
 import java.io.File
@@ -143,10 +142,6 @@ class SendActivity : AppCompatActivity(), CoroutineScope by MainScope() {
             }
             false
         }
-    }
-
-    override fun onBackPressed() {
-        startActivity(Intent(this, MainActivity::class.java))
     }
 
     override fun onNewIntent(intent: Intent?) {

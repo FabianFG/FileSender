@@ -111,7 +111,7 @@
     <string name="about_email" translatable="false">Email: fabianfg.dev@gmail.com</string>
     <string name="about_author">Author: Fabian FG</string>
     <string name="about_issues" >Found an issue? Email me or open an issue on github</string>
-    <string name="about_github" translatable="false">GitHub: https://github.com/FunGamesLeaks/FileSender/</string>
+    <string name="about_github" translatable="false">GitHub: https://github.com/FabianFG/FileSender/</string>
     <string name="about_betatester">Thanks to all betatesters:</string>
     <string name="about_betatester_body" translatable="false">Jan, Jannis, Jonah, Jonas, Lukas, Nils, Philipp</string>
     <string name="about">About</string>
